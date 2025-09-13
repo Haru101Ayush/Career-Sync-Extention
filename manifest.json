@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Job Description Email Helper",
+  "version": "1.0",
+  "description": "Extract job description details and prepare emails automatically with Google OAuth",
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "storage",
+    "identity",
+    "identity.email"
+  ],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "https://your-server.com/*",
+    "https://www.googleapis.com/*",
+    "https://gmail.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "auth.html",
+    "default_title": "Job Email Helper"
+  },
+  "oauth2": {
+ "client_id":  "677701404433-i8uvml33gnon8c0fc1lmi7d3dpea01gq.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.compose",
+      "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Career Sync </title>
+    <style>
+
+
+      body {
+  width: 580px;
+  min-height: 480px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  /* Softer gradient */
+  background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+  color: #333;
+}
+
+.container {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 25px;
+  /* Softer shadow */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  height: calc(100% - 50px);
+}
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  margin-bottom: 20px;
+}
+/* Header */
+.header h1 {
+  display: flex;
+  align-items: center;
+  color: #374151;
+ margin: 0 0 10px 0;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+   gap: 6px; 
+}
+.career-icon {
+  width: 20px;   
+  height: 20px;
+}
+.sub-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between; 
+  padding: 0 10px;
+}
+
+.left, .right {
+  display: flex;
+  align-items: center;
+}
+/* Upload Box */
+.upload-box {
+  border: 2px dashed #a78bfa; 
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  background: #f9f9ff;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  margin-top: 10px;
+}
+.upload-box:hover {
+  background: #f4f3ff;
+  border-color: #7c3aed;
+}
+
+/* Selected Text */
+.selected-text {
+  background: #fef2f2;
+  border-left: 4px solid #f87171;
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  margin-bottom: 15px;
+  max-height: 140px; 
+  overflow-y: auto; /* scroll if too long */
+}
+
+/* Buttons */
+button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #6366f1; /* Indigo */
+  color: white;
+}
+.btn-primary:hover {
+  background: #4f46e5;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-success {
+  background: #22c55e;
+  color: white;
+}
+.btn-success:hover {
+  background: #16a34a;
+}
+
+/* Info boxes */
+.info-box,
+.email-preview {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+      .selected-text {
+        background: #fff5f5;
+        border-left: 4px solid #f56565;
+        padding: 12px;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #4a5568;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      
+       input,
+  textarea,
+  select {
+    background: #f7fafc;        /* same as info-box */
+    border: 1px solid #e2e8f0;  /* same border */
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+    color: #374151;             /* dark gray text */
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%236366f1' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 30px;
+  }
+
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      button {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: #4299e1;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #3182ce;
+      }
+
+      .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+      }
+
+      .btn-secondary:hover {
+        background: #cbd5e0;
+      }
+
+      .btn-success {
+        background: #48bb78;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #38a169;
+      }
+
+      .status {
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .status.success {
+        background: #f0fff4;
+        color: #22543d;
+        border: 1px solid #9ae6b4;
+      }
+
+      .status.error {
+        background: #fff5f5;
+        color: #742a2a;
+        border: 1px solid #feb2b2;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      .spinner {
+        border: 2px solid #e2e8f0;
+        border-top: 2px solid #4299e1;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .email-preview {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .email-preview h4 {
+        margin: 0 0 10px 0;
+        color: #2d3748;
+      }
+
+      .email-content {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+      }
+     
+.user-header {
+  display: flex;
+  justify-content: space-between;  
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+   justify-content: flex-start;
+  gap: 10px;
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-size: 12px;
+   max-width: fit-content;
+  color: #374151;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-avatar-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.resume-box {
+  display: flex;
+  justify-content: center; 
+   flex-direction: column; 
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  margin-top: 30px;
+  color: #374151;
+}
+
+.user-name-small {
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Better Sign Out button */
+.logout-btn-small {
+  background: #ef4444;   /* red */
+  color: white;
+  border: none;
+  border-radius: 16px; 
+  
+padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.logout-btn-small:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.glassy-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 25px;   /* rounded pill shape */
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.glassy-btn:hover {
+  background: rgba(99, 102, 241, 0.3); /* indigo tint on hover */
+  transform: scale(1.05);
+}
+
+.file-link {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+.file-link:hover {
+  color: #1e40af;
+}
+
+#resumeSmallBox {
+  display: flex;
+  justify-content: center;   /* center items horizontally */
+  align-items: center;  
+  flex-direction: column;      /* center vertically */
+  gap: 12px;
+   gap: 12px;  
+  margin: 20px auto;         /* auto margin centers it */
+  width: fit-content;
+  text-align: center;
+}
+
+      
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+  <h1>
+  <img src="icons/icon16.png" alt="Career Sync" class="career-icon" />
+  Career Sync
+</h1>
+  <div class="sub-header">
+    <div class="left">
+      <div class="user-badge" id="userBadge" style="display: none">
+        <img class="user-avatar-small" id="userAvatarSmall" src="" alt="" />
+        <span class="user-name-small" id="userNameSmall"></span>
+      </div>
+    </div>
+    <div class="right">
+      <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+      <div class="section">
+        <h3>Selected Text</h3>
+        <div  class="info-box"  id="selectedText">
+          No text selected. Please select text on a job page and right-click
+          "Share to Job Email".
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Page Information</h3>
+        <div class="info-box">
+          <div><strong>URL:</strong> <span id="pageUrl">-</span></div>
+          <div><strong>Title:</strong> <span id="pageTitle">-</span></div>
+        </div>
+      </div>
+
+   
+
+    <div class="section">
+  <h3>Upload Resume</h3>
+
+  <!-- Big upload box (only shown when no resume stored yet) -->
+  <label class="upload-box" for="resumeInput" id="resumeUploadBox">
+    <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" />
+    <i>📄</i>
+    <p>Click to upload or drag & drop your Resume</p>
+    <small>(PDF, DOC, DOCX)</small>
+    <div class="file-name" id="fileName"></div>
+  </label>
+
+  <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
+  <span id="parseLoading" style="display:none">⏳ Parsing...</span>
+  <span id="parseSuccess" style="display:none; color:green;">✔ Parsed!</span>
+</div>
+
+  <!-- Small update box (only shown when resume already exists) -->
+  <div id="resumeSmallBox" class="resume-box" style="display:none;">
+  <span id="uploadedResumeName">filename.pdf</span>
+   <!-- <a id="uploadedResumeName" href= target="_blank" class="file-link">filename.pdf</a> -->
+  <button id="replaceResumeBtn" class="glassy-btn">📤 Update Resume</button>
+  </div>
+</div>
+
+
+
+      <div class="section">
+        <div class="section-header">
+          <h3>Settings</h3>
+          <div class="settings-dropdown">
+            <label for="settingsType">Configuration:</label>
+            <select id="settingsType">
+              <option value="default">Default Settings</option>
+              <option value="custom">Custom Settings</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="custom-settings" id="customSettings" style="display: none">
+          <!-- <div class="settings-section"> -->
+              <div class="info-box">
+            <h4>Server Configuration</h4>
+            <div class="form-group">
+              <label for="serverUrl">Server/Client URL:</label>
+              <input
+                type="url"
+                id="serverUrl"
+                placeholder="http://localhost:3000/api/job-email"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Email Template</h3>
+        <!-- <div class="info-box"></div> -->
+        <div class="form-group">
+          <label for="emailTemplate">Template Type:</label>
+          <select id="emailTemplate">
+            <option value="application">Job Application</option>
+            <option value="inquiry">Job Inquiry</option>
+            <option value="follow-up">Follow-up</option>
+            <option value="custom">Custom Template</option>
+          </select>
+        </div>
+        <div class="form-group" id="customTemplateGroup" style="display: none">
+          <label for="customTemplate">Custom Email Template:</label>
+          <textarea
+            id="customTemplate"
+            placeholder="Enter your custom email template...
+                
+Available placeholders:
+{selectedText} - Selected job text
+{pageUrl} - Job page URL  
+{pageTitle} - Job page title"
+          ></textarea>
+        </div>
+      </div>
+
+      
+
+    <div class="button-group" >
+        <button class="btn-primary" id="sendBtn">Send to Server</button>
+    </div>
+
+      <div class="button-group" id="mailActions" style="display: none">
+        <button class="btn-secondary" id="previewBtn">Preview</button>
+        <button class="btn-success" id="gmailBtn">Send via Gmail</button>
+        <button class="btn-success" id="copyBtn" style="display: none">Copy Email</button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Processing your request...
+      </div>
+
+      <div class="status" id="status"></div>
+
+      <div class="email-preview" id="emailPreview">
+        <h4>Email Preview</h4>
+        <div class="email-content" id="emailContent"></div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
