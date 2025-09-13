@@ -249,6 +249,22 @@ button {
         display: none;
       }
 
+      
+      .subject-textarea {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            min-height: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+      
+
       .status.success {
         background: #f0fff4;
         color: #22543d;
@@ -420,7 +436,139 @@ padding: 4px 10px;
   text-align: center;
 }
 
+.email-preview {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: block;
+            max-width: 800px;
+        }
+        
+        .email-preview h4 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .email-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 200px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .email-textarea {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            min-height: 250px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        .email-textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        /* Demo setup styles */
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .demo-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .demo-controls h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .generate-btn {
+            padding: 10px 20px;
+            background: #805ad5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .generate-btn:hover {
+            background: #6b46c1;
+        }
       
+        .subject-content {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 10px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
     </style>
   </head>
   <body>
@@ -535,10 +683,10 @@ padding: 4px 10px;
             id="customTemplate"
             placeholder="Enter your custom email template...
                 
-Available placeholders:
-{selectedText} - Selected job text
-{pageUrl} - Job page URL  
-{pageTitle} - Job page title"
+              Available placeholders:
+              {selectedText} - Selected job text
+              {pageUrl} - Job page URL  
+              {pageTitle} - Job page title"
           ></textarea>
         </div>
       </div>
@@ -562,12 +710,32 @@ Available placeholders:
 
       <div class="status" id="status"></div>
 
-      <div class="email-preview" id="emailPreview">
+      <!-- <div class="email-preview" id="emailPreview">
         <h4>Email Preview</h4>
         <div class="email-content" id="emailContent"></div>
+      </div> -->
+
+
+      <div class="email-preview" id="emailPreview" style="display: none;">
+    <h4>
+        Email Preview
+        <div class="preview-controls">
+            <button class="btn btn-primary" id="editBtn">Edit Email</button>
+            <button class="btn btn-success" id="saveBtn" style="display: none;">Save Changes</button>
+            <button class="btn btn-secondary" id="cancelBtn"style="display: none;">Cancel</button>
+        </div>
+    </h4>
+    
+    <label for="email_subject">Subject :</label>
+    <div class="subject-content" id="subjectContent"> </div>
+    <textarea class="subject-textarea" id="subjectTextarea" style="display: none;"> </textarea>
+
+    <label for="email_body"> Body :</label>
+    <div class="email-content" id="emailContent"></div>
+    <textarea class="email-textarea" id="emailTextarea" style="display: none;"></textarea>
+    
       </div>
     </div>
-
     <script src="popup.js"></script>
   </body>
 </html>
