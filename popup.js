@@ -1,5 +1,6 @@
 // Popup JavaScript for Job Email Helper extension
 const baseurl="https://ridgelike-katina-kissably.ngrok-free.app"
+let isEditMode = false;
 document.addEventListener('DOMContentLoaded', function() {
     checkAuthStatus();
     loadJobData();
@@ -333,24 +334,6 @@ function loadSavedSettings() {
     });
 }
 
-// Preview email functionality
-function previewEmail() {
-    chrome.storage.local.get(['jobData'], function(result) {
-        if (!result.jobData) {
-            showStatus('No job data available', 'error');
-            return;
-        }
-
-        const template = document.getElementById('emailTemplate').value;
-        const customTemplate = document.getElementById('customTemplate').value;
-        const emailContent = mail;
-        
-        document.getElementById('emailContent').innerHTML = emailContent;
-        document.getElementById('emailPreview').style.display = 'block';
-        document.getElementById('copyBtn').style.display = 'block';
-    });
-}
-
 // Generate email content based on template
 function generateEmailContent(jobDetails,forGmail = false) {
 
@@ -428,10 +411,13 @@ const profile_data = resumeSummary;
   showLoading(true);
 
   try {
+        const template = document.getElementById('emailTemplate').value;
+        const customTemplate = document.getElementById('customTemplate').value;
+
     const response = await sendMessageAsync({
       action: 'sendToServer',
       serverUrl: serverUrl,
-      data: { url: pageUrl, message: selectedText, title: pageTitle, resumeSummary: resumeSummary, profile_data:  profile_data }
+      data: { url: pageUrl, message: selectedText, title: pageTitle, resumeSummary: resumeSummary, profile_data:  profile_data , template }
     });
 
     showLoading(false);
@@ -513,3 +499,154 @@ function showLoading(show, message = 'Sending...') {
         gmailBtn.textContent = 'Send via Gmail';
     }
 }
+
+
+function previewEmail() {
+            const jobDetailsStr = localStorage.getItem('jobDetails');
+            const jobDetails = jobDetailsStr ? JSON.parse(jobDetailsStr) : null;
+            // Simulate the original function behavior
+
+            document.getElementById('subjectContent').innerHTML = jobDetails.subject;
+            document.getElementById('emailContent').innerHTML = jobDetails.body;
+            document.getElementById('emailPreview').style.display = 'block';
+            // originalContent = emailContent;
+            
+            // Reset to preview mode
+            if (isEditMode) {
+                toggleEditMode();
+            }
+        }
+
+        function toggleEditMode() {
+            const emailContent = document.getElementById('emailContent');
+            const subjectContent = document.getElementById('subjectContent');
+            const emailTextarea = document.getElementById('emailTextarea');
+            const subjectTextarea = document.getElementById('subjectTextarea');
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const copyBtn = document.getElementById('copyBtn');
+
+            if (!isEditMode) {
+                // Switch to edit mode
+                isEditMode = true;
+                
+                // Get current content and populate textarea
+                const currentContent = emailContent.textContent;
+                emailTextarea.value = currentContent;
+                subjectTextarea.value = subjectContent.textContent;
+                // Toggle visibility
+                emailContent.style.display = 'none';
+                emailTextarea.style.display = 'block';
+                subjectContent.style.display = 'none';
+                subjectTextarea.style.display = 'block';
+                
+                // Update buttons
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+                copyBtn.style.display = 'none';
+                
+                // Focus on textarea
+                emailTextarea.focus();
+            }
+        }
+
+        function saveChanges() {
+            const emailContent = document.getElementById('emailContent');
+            const subjectContent = document.getElementById('subjectContent');
+            const emailTextarea = document.getElementById('emailTextarea');
+            const subjectTextarea = document.getElementById('subjectTextarea');
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // Get the edited content
+            const editedContent = emailTextarea.value;
+            
+            // Update the preview content
+            emailContent.textContent = editedContent;
+            originalContent = editedContent;
+            subjectContent.textContent = subjectTextarea.value;
+
+            const jobDetailsStr = localStorage.getItem('jobDetails');
+            const jobDetails = jobDetailsStr ? JSON.parse(jobDetailsStr) : null;
+
+            // Update the job details
+            jobDetails.body = editedContent;
+            jobDetails.subject = subjectTextarea.value;
+            localStorage.setItem('jobDetails', JSON.stringify(jobDetails));
+
+            // Switch back to preview mode
+            isEditMode = false;
+            
+            // Toggle visibility
+            emailTextarea.style.display = 'none';
+            emailContent.style.display = 'block';
+            subjectTextarea.style.display = 'none';
+            subjectContent.style.display = 'block';
+            
+            // Update buttons
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            editBtn.style.display = 'inline-block';
+            copyBtn.style.display = 'inline-block';
+            
+            // Show success feedback
+            showStatus('Email updated successfully!', 'success');
+        }
+
+        function cancelEdit() {
+            const emailContent = document.getElementById('emailContent');
+            const emailTextarea = document.getElementById('emailTextarea');
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // Switch back to preview mode without saving
+            isEditMode = false;
+            
+            // Toggle visibility
+            emailTextarea.style.display = 'none';
+            emailContent.style.display = 'block';
+            
+            // Update buttons
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            editBtn.style.display = 'inline-block';
+            copyBtn.style.display = 'inline-block';
+        }
+
+        function showStatus(message, type) {
+            // Simple status notification
+            const statusDiv = document.createElement('div');
+            statusDiv.textContent = message;
+            statusDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                transition: opacity 0.3s ease;
+                ${type === 'success' ? 'background: #48bb78;' : 'background: #f56565;'}
+            `;
+            
+            document.body.appendChild(statusDiv);
+            
+            setTimeout(() => {
+                statusDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(statusDiv);
+                }, 300);
+            }, 2000);
+        }
+
+    // Preview email button
+    document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+    document.getElementById('saveBtn').addEventListener('click', saveChanges);
+    document.getElementById('cancelBtn').addEventListener('click', cancelEdit);
