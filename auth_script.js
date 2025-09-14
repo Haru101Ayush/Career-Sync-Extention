@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
 });
 
-// Check if user is already authenticated
+
 function checkAuthStatus() {
     chrome.storage.local.get(['userToken', 'userInfo'], function(result) {
         if (result.userToken && result.userInfo) {
@@ -42,6 +42,20 @@ function checkAuthStatus() {
         }
     });
 }
+// function checkAuthStatus() {
+//     chrome.runtime.sendMessage({ action: 'checkAuthStatus' }, function(response) {
+//         if (!response || !response.authenticated) {
+//             // Redirect to auth page
+//             chrome.action.setPopup({ popup: 'auth.html' });
+//             window.close(); // This closes the popup immediately
+//             return;
+//         }
+//         // User is authenticated, show user info if available
+//         if (response.userInfo) {
+//             displayUserInfo(response.userInfo);
+//         }
+//     });
+// }
 
 // Setup event listeners
 function setupEventListeners() {
@@ -189,7 +203,11 @@ function fetchUserInfo(token) {
             // Send message to content script (e.g., Gmail tab)
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (tabs[0]) {
+            try {
             chrome.tabs.sendMessage(tabs[0].id, { action: "openPopupWindow" });
+        } catch (err) {
+            console.warn("Could not send message:", err);
+        }
         }
     });
 
