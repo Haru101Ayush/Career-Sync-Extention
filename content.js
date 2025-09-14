@@ -19,6 +19,12 @@ document.addEventListener('mouseup', function() {
 
 // Listen for messages from popup or background
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Handle ping messages to check if content script is loaded
+  if (request.action === "ping") {
+    sendResponse({ status: "content_script_active" });
+    return true;
+  }
+  
   if (request.action === "getPageContent") {
     // Extract job-related information from the page
     const jobInfo = extractJobInformation();
@@ -31,12 +37,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ success: true });
   }
 
-    if (request.action === "openPopupWindow") {
+  if (request.action === "openPopupWindow") {
     // Example: open a small popup/modal inside the current page
     showLoginSuccessPopup();
     sendResponse({ success: true });
   }
-
+  
+  // Return true to indicate async response if needed
+  return true;
 });
 
 // Function to extract job information from the page

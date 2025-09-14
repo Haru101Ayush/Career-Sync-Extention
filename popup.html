@@ -3,9 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Career Sync </title>
+    <title>Career Sync</title>
+    <meta name="description" content="Career Sync - Email generation tool for job applications" />
     <style>
-
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
 
       body {
   width: 580px;
@@ -32,6 +42,10 @@
   align-items: center; 
   margin-bottom: 20px;
 }
+.main-content {
+  text-align: left;
+}
+
 /* Header */
 .header h1 {
   display: flex;
@@ -106,22 +120,76 @@ button {
   background: #4f46e5;
 }
 
-.btn-secondary {
+/* .btn-secondary {
   background: #f3f4f6;
   color: #374151;
 }
 .btn-secondary:hover {
   background: #e5e7eb;
+} */
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 8px 16px;   /* add padding if needed */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block; /* force inline behavior */
 }
 
-.btn-success {
-  background: #22c55e;
+.btn-secondary:hover {
+   background: #16a34a;
+}
+#mailActions {
+  display: flex;     
+  justify-content: flex-end;      /* Align children in a row */
+  gap: 50px;               /* Space between buttons */
+  align-items: center;     /* Vertically center buttons */
+  /* margin-top: 10px;        */
+  width: 100%;       
+}
+#mailActions button {
+  display: inline-block !important; /* override any block styling */
+  width: auto !important;           /* shrink to content */
+  flex-shrink: 0;       
+  margin: 0 25px;               /* prevent shrinking */
+}
+#previewBtn {
+   background: #16a34a;
   color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+}
+#previewBtn:hover {
+  background: #16a34a;
+}
+/* .btn-success {
+  
+  padding: 8px 16px;
+  border: none;
+
+  border-radius: 5px;
+  cursor: pointer;
 }
 .btn-success:hover {
   background: #16a34a;
+} */
+
+.btn-success {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block; /* force inline behavior */
 }
 
+.btn-success:hover {
+  background: #16a34a;
+}
 /* Info boxes */
 .info-box,
 .email-preview {
@@ -201,7 +269,7 @@ button {
       .button-group {
         display: flex;
         gap: 10px;
-        margin-top: 20px;
+        margin-top: 10px;
       }
 
       button {
@@ -216,8 +284,14 @@ button {
       }
 
       .btn-primary {
-        background: #4299e1;
-        color: white;
+        /* background: #4299e1;
+        color: white; */
+         background: #2d9cdb;
+  color: white;
+  padding: 8px 22px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
       }
 
       .btn-primary:hover {
@@ -248,6 +322,19 @@ button {
         margin-top: 15px;
         display: none;
       }
+      .subject-textarea {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            min-height: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+        }
 
       .status.success {
         background: #f0fff4;
@@ -286,7 +373,8 @@ button {
           transform: rotate(360deg);
         }
       }
-
+     
+      
       .email-preview {
         background: #f7fafc;
         border: 1px solid #e2e8f0;
@@ -339,16 +427,158 @@ button {
   border: 2px solid #fff;
 }
 .resume-box {
-  display: flex;
-  justify-content: center; 
+  /* display: flex;
+ 
+  flex-direction: column;
    flex-direction: column; 
   align-items: center;
   gap: 8px;
   text-align: center;
   margin-top: 30px;
-  color: #374151;
+  color: #374151; */
+   /* width: 100%;
+  margin: 20px auto;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9fafb; */
+  display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
 }
 
+.resume-row {
+  /* display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(99,102,241,0.04); */
+   /* display: flex;
+  align-items: center;
+  gap: 8px;           
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;  
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(99,102,241,0.04); */
+  display: flex;              /* aligns children in a row */
+  justify-content: space-between; /* pushes file name left and status right */
+  align-items: center;
+  /* padding: 6px 0;
+  gap: 8px;  
+  border-bottom: 1px solid #ddd; */
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(99,102,241,0.05);
+
+}
+.resume-row .file-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.file-icon-circle {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #eef6ff; /* pale blue */
+  color: #2563eb;
+  font-size: 16px;
+}
+
+.resume-row .file-icon {
+  font-size: 18px;
+}
+
+.resume-row .file-link {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+  /* cursor: pointer; */
+  /* flex-grow: 1;  */
+}
+.resume-row .file-link:hover {
+  color: #1e40af;
+}
+.status-right {
+  /* display: flex;
+  align-items: center;
+  gap: 10px; */
+  position: relative;
+  padding-right: 36px; 
+}
+
+/* "Status :" unchanged, value styled */
+.status-text {
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+}
+.status-value {
+  color: #16a34a; /* green for parsed */
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+/* icon container — we will insert inline SVGs via JS */
+.status-icon svg { width: 18px; height: 18px; vertical-align: middle; }
+
+.resume-row .status {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;      /* gap between text and icon */
+  
+}
+.resume-row .status.success {
+  color: #22c55e;
+}
+.resume-row .status.error {
+  color: #ef4444;
+}
+.status-icon {
+  /* width: 18px;
+  height: 18px; */
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.resume-row .status-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+#resumeUploadBox {
+  text-align: center;
+  margin: 20px auto;
+}
+#uploadedResumeName {
+  font-weight: 500;
+  text-align: left;
+}
+
+#resumeStatus {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .user-name-small {
   font-weight: 500;
   max-width: 120px;
@@ -419,19 +649,269 @@ padding: 4px 10px;
   width: fit-content;
   text-align: center;
 }
+.email-preview {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: block;
+            max-width: 800px;
+        }
+         .email-preview h4 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .email-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 200px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .email-textarea {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            min-height: 250px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        .email-textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+.profile-menu {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+}
 
-      
+.user-badge {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  padding: 10px;
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.dropdown.show {
+  display: block;
+}
+
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Switch style */
+.toggle input {
+  display: none;
+}
+
+.toggle .slider {
+  width: 34px;
+  height: 18px;
+  background: #d1d5db;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle .slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background: #22c55e;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(16px);
+}
+
+/* Dropdown box */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 200px;
+  z-index: 1000;
+}
+
+/* Show dropdown when toggled */
+.dropdown.show {
+  display: block;
+}
+
+/* Developer Mode label + toggle */
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Make logout button bigger */
+.logout-btn-small {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logout-btn-small:hover {
+  background-color: #dc2626;
+}
+
+/* Profile menu container */
+.profile-menu {
+  position: relative; /* Needed for dropdown positioning */
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  background: #f9fafb;
+  padding: 6px 12px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.status-icon {
+  width: 18px;
+  height: 18px;
+   /* vertical-align: middle; */
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: red; /* default = OFF */
+}
+
+.token-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+      .status-row-main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+        .subject-content {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 10px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+.status-row-main .status-icon {
+  width: 18px;
+  height: 18px;
+}
+.status-icon-inline {
+  width: 18px;
+  height: 18px;
+  display: block;   /* ensures proper alignment */
+  position: static; /* override absolute from global .status-icon */
+  transform: none;  /* remove any transform */
+}
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
+    <div class="container" role="main">
+      <header class="header">
   <h1>
   <img src="icons/icon16.png" alt="Career Sync" class="career-icon" />
   Career Sync
 </h1>
-  <div class="sub-header">
-    <div class="left">
+  <!-- <div class="sub-header">
+    <div class="right">
       <div class="user-badge" id="userBadge" style="display: none">
         <img class="user-avatar-small" id="userAvatarSmall" src="" alt="" />
         <span class="user-name-small" id="userNameSmall"></span>
@@ -441,59 +921,131 @@ padding: 4px 10px;
       <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
     </div>
   </div>
+</div> -->
+
+<div class="sub-header">
+  <div class="profile-menu">
+    <div class="user-badge" id="userBadge" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown">
+      <img class="user-avatar-small" id="userAvatarSmall" src="" alt="User avatar" />
+      <span class="user-name-small" id="userNameSmall">User</span>
+    </div>
+
+<div class="status-row status-row-main" aria-live="polite">
+  <img src="icons/icon16.png" alt="Career Sync status" class="status-icon-inline" />
+  <span class="status-dot" id="devStatusDot" aria-hidden="true"></span>
+  <span class="token-count" id="tokenCount" aria-label="Token count: 15">15</span>
 </div>
 
-      <div class="section">
-        <h3>Selected Text</h3>
-        <div  class="info-box"  id="selectedText">
+    <div class="dropdown" id="profileDropdown" role="menu">
+      <div class="toggle">
+        <label for="devModeToggle">Developer Mode</label>
+        <input type="checkbox" id="devModeToggle" aria-checked="false" />
+        <span class="slider" role="presentation"></span>
+      </div>
+      <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
+    </div>
+    
+  </div>
+</div>
+
+
+      <main class="main-content">
+      <section class="section">
+        <h2>Selected Text</h2>
+        <div class="info-box" id="selectedText" role="status" aria-live="polite">
           No text selected. Please select text on a job page and right-click
           "Share to Job Email".
         </div>
-      </div>
+      </section>
 
-      <div class="section">
-        <h3>Page Information</h3>
+      <section class="section">
+        <h2>Page Information</h2>
         <div class="info-box">
-          <div><strong>URL:</strong> <span id="pageUrl">-</span></div>
-          <div><strong>Title:</strong> <span id="pageTitle">-</span></div>
+          <dl>
+            <dt>URL:</dt>
+            <dd id="pageUrl">-</dd>
+            <dt>Title:</dt>
+            <dd id="pageTitle">-</dd>
+          </dl>
         </div>
-      </div>
+      </section>
 
    
 
-    <div class="section">
+    <!-- <div class="section">
   <h3>Upload Resume</h3>
 
-  <!-- Big upload box (only shown when no resume stored yet) -->
+  
   <label class="upload-box" for="resumeInput" id="resumeUploadBox">
     <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" />
     <i>📄</i>
     <p>Click to upload or drag & drop your Resume</p>
     <small>(PDF, DOC, DOCX)</small>
     <div class="file-name" id="fileName"></div>
+    
   </label>
-
-  <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
-  <span id="parseLoading" style="display:none">⏳ Parsing...</span>
-  <span id="parseSuccess" style="display:none; color:green;">✔ Parsed!</span>
-</div>
-
-  <!-- Small update box (only shown when resume already exists) -->
-  <div id="resumeSmallBox" class="resume-box" style="display:none;">
-  <span id="uploadedResumeName">filename.pdf</span>
-   <!-- <a id="uploadedResumeName" href= target="_blank" class="file-link">filename.pdf</a> -->
-  <button id="replaceResumeBtn" class="glassy-btn">📤 Update Resume</button>
+<div style="display:flex; justify-content:center; margin-top:12px;">
+    <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
+    <span id="parseLoading" style="display:none; margin-left:10px;">⏳ Parsing...</span>
   </div>
-</div>
 
+<div id="resumeRows" style="margin-top: 12px;"></div>
 
+<div style="display:flex; justify-content:center; margin-top:10px;">
+    <button id="replaceResumeBtn" class="btn-primary" style="display:none;">Update</button>
+  </div>
+</div> -->
+<section class="section">
+  <h2>Upload Resume</h2>
 
-      <div class="section">
+  <!-- Big upload box -->
+  <div class="upload-container">
+    <label class="upload-box" for="resumeInput" id="resumeUploadBox">
+      <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" aria-describedby="fileFormatHint" />
+      <div class="upload-inner">
+        <span class="upload-icon" aria-hidden="true">📄</span>
+        <div>
+          <p class="upload-text">Click to upload or drag & drop your Resume</p>
+          <small id="fileFormatHint">(PDF, DOC, DOCX)</small>
+        </div>
+      </div>
+      <div class="file-name" id="fileName" aria-live="polite"></div>
+    </label>
+  </div>
+
+  <!-- parse button + loader (hidden until file chosen) -->
+  <div class="button-container" style="display:flex; justify-content:center; margin-top:12px;">
+    <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
+    <span id="parseLoading" style="display:none; margin-left:10px;" role="status" aria-live="polite">⏳ Parsing...</span>
+  </div>
+
+  <!-- Parsed row (hidden until parse or saved resume) -->
+  <div id="resumeRows" style="margin-top: 12px; display:none;" aria-live="polite">
+    <div class="resume-row" id="parsedRow">
+      <div class="file-left">
+        <div class="file-icon-circle" aria-hidden="true">📄</div>
+        <a id="parsedFileLink" class="file-link" href="#" target="_blank"></a>
+      </div>
+
+      <div class="status-right">
+        <div id="resumeStatusText" class="status-text">Status: <span id="statusLabel" class="status-value">Parsed</span></div>
+        <div id="statusIcon" class="status-icon" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- Update button centered below (as in your screenshot) -->
+    <div class="button-container" style="display:flex; justify-content:center; margin-top:12px;">
+      <button id="replaceResumeBtn" class="btn-primary" style="display:none;">Update</button>
+    </div>
+  </div>
+</section>
+
+      <section class="section">
         <div class="section-header">
-          <h3>Settings</h3>
+          <h2>Settings</h2>
           <div class="settings-dropdown">
             <label for="settingsType">Configuration:</label>
-            <select id="settingsType">
+            <select id="settingsType" aria-controls="customSettings">
               <option value="default">Default Settings</option>
               <option value="custom">Custom Settings</option>
             </select>
@@ -501,9 +1053,8 @@ padding: 4px 10px;
         </div>
 
         <div class="custom-settings" id="customSettings" style="display: none">
-          <!-- <div class="settings-section"> -->
-              <div class="info-box">
-            <h4>Server Configuration</h4>
+          <div class="info-box">
+            <h3>Server Configuration</h3>
             <div class="form-group">
               <label for="serverUrl">Server/Client URL:</label>
               <input
@@ -511,18 +1062,19 @@ padding: 4px 10px;
                 id="serverUrl"
                 placeholder="http://localhost:3000/api/job-email"
                 value=""
+                aria-describedby="serverUrlHint"
               />
+              <div id="serverUrlHint" class="visually-hidden">Enter the API endpoint URL for job email processing</div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="section">
-        <h3>Email Template</h3>
-        <!-- <div class="info-box"></div> -->
+      <section class="section">
+        <h2>Email Template</h2>
         <div class="form-group">
           <label for="emailTemplate">Template Type:</label>
-          <select id="emailTemplate">
+          <select id="emailTemplate" aria-controls="customTemplateGroup">
             <option value="application">Job Application</option>
             <option value="inquiry">Job Inquiry</option>
             <option value="follow-up">Follow-up</option>
@@ -533,6 +1085,7 @@ padding: 4px 10px;
           <label for="customTemplate">Custom Email Template:</label>
           <textarea
             id="customTemplate"
+            aria-describedby="templateHint"
             placeholder="Enter your custom email template...
                 
 Available placeholders:
@@ -540,34 +1093,48 @@ Available placeholders:
 {pageUrl} - Job page URL  
 {pageTitle} - Job page title"
           ></textarea>
+          <div id="templateHint" class="visually-hidden">Use placeholders like {selectedText}, {pageUrl}, and {pageTitle} in your template</div>
         </div>
-      </div>
+      </section>
 
       
 
-    <div class="button-group" >
-        <button class="btn-primary" id="sendBtn">Send to Server</button>
+    <div class="button-group" role="group" aria-label="Email generation controls">
+        <button class="btn-primary" id="sendBtn" aria-controls="mailActions">Generate Mail</button>
     </div>
 
-      <div class="button-group" id="mailActions" style="display: none">
-        <button class="btn-secondary" id="previewBtn">Preview</button>
-        <button class="btn-success" id="gmailBtn">Send via Gmail</button>
+      <div class="button-group" id="mailActions" style="display: none" role="group" aria-label="Email actions">
+        <button class="btn-secondary" id="previewBtn" aria-controls="emailPreview">Preview</button>
         <button class="btn-success" id="copyBtn" style="display: none">Copy Email</button>
+        <button class="btn-success" id="gmailBtn">Send via Gmail</button>
       </div>
 
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
+      <div class="loading" id="loading" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
         Processing your request...
       </div>
 
-      <div class="status" id="status"></div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+       <section class="email-preview" id="emailPreview" style="display: none;" aria-labelledby="emailPreviewHeading">
+    <h2 id="emailPreviewHeading">
+        Email Preview
+        <div class="preview-controls" role="group" aria-label="Email editing controls">
+            <button class="btn btn-primary" id="editBtn" aria-controls="subjectTextarea emailTextarea">Edit Email</button>
+            <button class="btn btn-success" id="saveBtn" style="display: none;">Save Changes</button>
+            <button class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+        </div>
+    </h2>
+    
+    <label for="subjectTextarea">Subject:</label>
+    <div class="subject-content" id="subjectContent" aria-live="polite"> </div>
+    <textarea class="subject-textarea" id="subjectTextarea" style="display: none;" aria-label="Edit email subject"> </textarea>
 
-      <div class="email-preview" id="emailPreview">
-        <h4>Email Preview</h4>
-        <div class="email-content" id="emailContent"></div>
-      </div>
+    <label for="emailTextarea">Body:</label>
+    <div class="email-content" id="emailContent" aria-live="polite"></div>
+    <textarea class="email-textarea" id="emailTextarea" style="display: none;" aria-label="Edit email body"></textarea>
+    
+      </section>
     </div>
-
     <script src="popup.js"></script>
   </body>
 </html>
