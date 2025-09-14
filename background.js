@@ -11,18 +11,18 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-
   if (info.menuItemId === "shareToJobEmail") {
-    
+    // Check if user is authenticated first
     chrome.storage.local.get(['userToken'], function(result) {
-
       if (!result.userToken) {
+        // User not authenticated, open auth popup
         chrome.action.setPopup({ popup: 'auth.html' });
         chrome.action.openPopup();
         return;
       }
       const profile_data = result.resumeSummary || '';
 
+      // User is authenticated, proceed with normal flow
       const jobData = {
         selectedText: info.selectionText,
         pageUrl: tab.url,
@@ -31,8 +31,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
          profile_data: profile_data 
       };
       
+      // Store data for popup to access
       chrome.storage.local.set({ jobData: jobData });
       
+      // Set popup to main app and open it
       chrome.action.setPopup({ popup: 'popup.html' });
       chrome.action.openPopup();
     });
@@ -46,6 +48,8 @@ function getToken() {
         });
     });
 }
+
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "checkAuthStatus") {
