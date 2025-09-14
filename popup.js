@@ -174,9 +174,14 @@ async function setupDevModeToggle() {
   try {
     const devToggle = document.getElementById('devModeToggle');
     const devStatusDot = document.getElementById('devStatusDot');
+    const userBadge = document.getElementById('userBadge');
+    const dropdown = document.getElementById('profileDropdown');
     const settingsSection = document.querySelector('.section-header')?.parentElement; // Settings container
     
-    if (!devToggle || !devStatusDot || !settingsSection) return;
+    if (!devToggle || !devStatusDot) {
+      console.error('Developer mode toggle elements not found');
+      return;
+    }
 
     // Load saved dev mode state
     const result = await new Promise((resolve, reject) => {
@@ -191,7 +196,25 @@ async function setupDevModeToggle() {
     
     const isDev = result.devMode || false;
     devToggle.checked = isDev;
-    settingsSection.style.display = isDev ? 'block' : 'none';
+    
+    // Update settings section visibility if it exists
+    if (settingsSection) {
+      settingsSection.style.display = isDev ? 'block' : 'none';
+    }
+    
+    // Make sure dropdown is visible when clicking on user badge
+    if (userBadge && dropdown) {
+      userBadge.addEventListener('click', () => {
+        dropdown.classList.toggle('show');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (event) => {
+        if (!userBadge.contains(event.target) && !dropdown.contains(event.target)) {
+          dropdown.classList.remove('show');
+        }
+      });
+    }
 
     // On toggle change → save + update dot
     devToggle.addEventListener('change', async () => {
@@ -207,7 +230,17 @@ async function setupDevModeToggle() {
           });
         });
         
-        settingsSection.style.display = isDev ? 'block' : 'none';
+        // Update UI based on dev mode state
+        if (settingsSection) {
+          settingsSection.style.display = isDev ? 'block' : 'none';
+        }
+        
+        // Update status dot color
+        if (devStatusDot) {
+          devStatusDot.style.backgroundColor = isDev ? '#22c55e' : '#ef4444';
+        }
+        
+        console.log('Developer mode ' + (isDev ? 'enabled' : 'disabled'));
       } catch (error) {
         console.error('Error saving dev mode state:', error);
         showStatus('Failed to save developer mode setting', 'error');
@@ -379,22 +412,8 @@ function setupEventListeners() {
             logoutBtnSmall.addEventListener('click', logout);
         }
         
-        // User badge dropdown
-        const userBadge = document.getElementById("userBadge");
-        const dropdown = document.getElementById("profileDropdown");
-        
-        if (userBadge && dropdown) {
-            userBadge.addEventListener("click", () => {
-                dropdown.classList.toggle("show");
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener("click", (event) => {
-                if (!userBadge.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.remove("show");
-                }
-            });
-        }
+        // User badge dropdown event listeners are now handled in setupDevModeToggle function
+        // to ensure proper integration with the developer mode toggle
 
         // Save custom server URL when changed
         const serverUrlEl = document.getElementById('serverUrl');

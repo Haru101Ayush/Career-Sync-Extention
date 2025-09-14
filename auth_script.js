@@ -257,7 +257,17 @@ const fetchUserInfo = async (token) => {
     
     if (tabs[0]) {
       try {
-        chrome.tabs.sendMessage(tabs[0].id, { action: "openPopupWindow" });
+        // Check if the tab has a content script by sending a ping first
+        chrome.tabs.sendMessage(tabs[0].id, { action: "ping" }, (response) => {
+          if (chrome.runtime.lastError) {
+            // Silently handle the error - content script might not be loaded
+            console.log("Content script not available:", chrome.runtime.lastError.message);
+            return;
+          }
+          
+          // If we got a response, the content script is available, send the actual message
+          chrome.tabs.sendMessage(tabs[0].id, { action: "openPopupWindow" });
+        });
       } catch (err) {
         console.warn("Could not send message:", err);
       }
