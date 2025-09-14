@@ -1,320 +1,407 @@
-// Authentication script for Job Email Helper extension
-const baseurl="https://ridgelike-katina-kissably.ngrok-free.app"
-function authenticateWithGoogle() {
-  chrome.identity.getAuthToken({ interactive: true }, function(token) {
-    if (chrome.runtime.lastError) {
-      console.error("Failed to get token:", chrome.runtime.lastError);
-      alert("Authentication failed: " + chrome.runtime.lastError.message);
-      return;
-    }
+/**
+ * Authentication script for Career Sync Chrome extension
+ * Handles Google OAuth authentication and user session management
+ */
 
-    console.log("OAuth Token:", token);
-    // You can now use the token to call Gmail API or Google user info
-    fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+// API base URL
+const BASE_URL = "https://ridgelike-katina-kissably.ngrok-free.app";
+
+/**
+ * Authenticates user with Google OAuth
+ * @async
+ */
+const authenticateWithGoogle = async () => {
+  try {
+    const token = await new Promise((resolve, reject) => {
+      chrome.identity.getAuthToken({ interactive: true }, (token) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
+        }
+        resolve(token);
+      });
+    });
+
+    // Fetch user info with the token
+    const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((res) => res.json())
-      .then((userInfo) => {
-        console.log("User Info:", userInfo);
-        document.getElementById("status").innerText = `Logged in as ${userInfo.email}`;
-      })
-      .catch((err) => {
-        console.error("Error fetching user info:", err);
-        alert("Failed to get user info");
-      });
-  });
-}
+    });
 
-document.addEventListener('DOMContentLoaded', function() {
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const userInfo = await response.json();
+    document.getElementById("status").innerText = `Logged in as ${userInfo.email}`;
+    return { token, userInfo };
+  } catch (error) {
+    console.error("Authentication error:", error);
+    showStatus(`Authentication failed: ${error.message}`, 'error');
+    throw error;
+  }
+};
+
+/**
+ * Initialize the authentication page
+ */
+document.addEventListener('DOMContentLoaded', () => {
     checkAuthStatus();
     setupEventListeners();
 });
 
 
-function checkAuthStatus() {
-    chrome.storage.local.get(['userToken', 'userInfo'], function(result) {
-        if (result.userToken && result.userInfo) {
-            showUserInfo(result.userInfo);
-        } else {
-            showAuthSection();
-        }
-    });
-}
-// function checkAuthStatus() {
-//     chrome.runtime.sendMessage({ action: 'checkAuthStatus' }, function(response) {
-//         if (!response || !response.authenticated) {
-//             // Redirect to auth page
-//             chrome.action.setPopup({ popup: 'auth.html' });
-//             window.close(); // This closes the popup immediately
-//             return;
-//         }
-//         // User is authenticated, show user info if available
-//         if (response.userInfo) {
-//             displayUserInfo(response.userInfo);
-//         }
-//     });
-// }
-
-// Setup event listeners
-function setupEventListeners() {
-    document.getElementById('googleSignIn').addEventListener('click', initiateGoogleAuth);
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    document.getElementById('continueBtn').addEventListener('click', continueToApp);
+/**
+ * Check if user is authenticated and show appropriate UI
+ */
+const checkAuthStatus = () => {
+  chrome.storage.local.get(['userToken', 'userInfo'], (result) => {
+    if (result.userToken && result.userInfo) {
+      showUserInfo(result.userInfo);
+    } else {
+      showAuthSection();
+    }
+  });
 }
 
-// Show authentication section
-function showAuthSection() {
-    document.getElementById('authSection').style.display = 'block';
-    document.getElementById('userInfo').style.display = 'none';
-    document.getElementById('loading').style.display = 'none';
-}
+/**
+ * Setup event listeners for the authentication page
+ */
+const setupEventListeners = () => {
+  document.getElementById('googleSignIn').addEventListener('click', initiateGoogleAuth);
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  document.getElementById('continueBtn').addEventListener('click', continueToApp);
+};
 
-// Show user information section
-function showUserInfo(userInfo) {
-    document.getElementById('authSection').style.display = 'none';
-    document.getElementById('userInfo').style.display = 'block';
-    document.getElementById('loading').style.display = 'none';
-    
-    // Populate user information
-    document.getElementById('userAvatar').src = userInfo.picture || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23666"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+/**
+ * Show authentication section and hide other sections
+ */
+const showAuthSection = () => {
+  document.getElementById('authSection').style.display = 'block';
+  document.getElementById('userInfo').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+};
+
+/**
+ * Show user information section and populate with user data
+ * @param {Object} userInfo - User information object from Google API
+ */
+const showUserInfo = (userInfo) => {
+  document.getElementById('authSection').style.display = 'none';
+  document.getElementById('userInfo').style.display = 'block';
+  document.getElementById('loading').style.display = 'none';
+  
+  // Default avatar SVG as fallback
+  const defaultAvatar = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23666"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  
+  // Populate user information
+  document.getElementById('userAvatar').src = userInfo.picture || defaultAvatar;
     document.getElementById('userName').textContent = userInfo.name || 'User';
     document.getElementById('userEmail').textContent = userInfo.email || '';
 }
 
-// Show loading state
-function showLoading(show) {
-    if (show) {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('userInfo').style.display = 'none';
-    } else {
-        document.getElementById('loading').style.display = 'none';
-    }
+/**
+ * Show or hide loading state and adjust other UI elements accordingly
+ * @param {boolean} show - Whether to show or hide the loading state
+ */
+const showLoading = (show) => {
+  if (show) {
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'none';
+  } else {
+    document.getElementById('loading').style.display = 'none';
+  }
+};
+
+/**
+ * Show status message with auto-hide after timeout
+ * @param {string} message - The message to display
+ * @param {string} type - The type of message ('success', 'error', etc.)
+ * @param {number} [timeout=5000] - Time in ms before hiding the message
+ */
+const showStatus = (message, type, timeout = 5000) => {
+  const statusEl = document.getElementById('status');
+  statusEl.textContent = message;
+  statusEl.className = `status ${type}`;
+  statusEl.style.display = 'block';
+  
+  // Hide after specified timeout
+  setTimeout(() => {
+    statusEl.style.display = 'none';
+  }, timeout);
 }
 
-// Show status message
-function showStatus(message, type) {
-    const statusEl = document.getElementById('status');
-    statusEl.textContent = message;
-    statusEl.className = `status ${type}`;
-    statusEl.style.display = 'block';
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-        statusEl.style.display = 'none';
-    }, 5000);
-}
-
-// Initiate Google OAuth authentication
-function initiateGoogleAuth() {
+/**
+ * Initiate Google OAuth authentication process
+ * @async
+ */
+const initiateGoogleAuth = async () => {
+  try {
     showLoading(true);
     
     // Check if the OAuth2 configuration exists
     if (!chrome.runtime.getManifest().oauth2) {
-        showLoading(false);
-        showStatus('OAuth configuration not found. Please check manifest.json', 'error');
-        return;
+      throw new Error('OAuth configuration not found. Please check manifest.json');
     }
     
-    // Launch the OAuth flow
-    chrome.identity.getAuthToken({ 
-        interactive: true,
-        scopes: [
-            'https://www.googleapis.com/auth/gmail.compose',
-            'https://www.googleapis.com/auth/gmail.send',
-            'https://www.googleapis.com/auth/gmail.modify',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile'
-        ]
-    }, function(token) {
-        showLoading(false);
-        
+    // Define required scopes
+    const scopes = [
+      'https://www.googleapis.com/auth/gmail.compose',
+      'https://www.googleapis.com/auth/gmail.send',
+      'https://www.googleapis.com/auth/gmail.modify',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile'
+    ];
+    
+    // Launch the OAuth flow with Promise wrapper
+    const token = await new Promise((resolve, reject) => {
+      chrome.identity.getAuthToken({ interactive: true, scopes }, (token) => {
         if (chrome.runtime.lastError) {
-            console.error('OAuth Error:', chrome.runtime.lastError);
-            showStatus('Authentication failed: ' + chrome.runtime.lastError.message, 'error');
-            showAuthSection();
-            return;
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
         }
-        
-        if (token) {
-            // Store the token
-            chrome.storage.local.set({ userToken: token });
-            
-            // Fetch user information
-            fetchUserInfo(token);
-        } else {
-            showStatus('Authentication cancelled or failed', 'error');
-            showAuthSection();
+        if (!token) {
+          reject(new Error('Authentication cancelled or failed'));
+          return;
         }
+        resolve(token);
+      });
     });
+    
+    // Store the token
+    await new Promise((resolve) => {
+      chrome.storage.local.set({ userToken: token }, resolve);
+    });
+    
+    // Fetch user information
+    await fetchUserInfo(token);
+  } catch (error) {
+    console.error('Authentication error:', error);
+    showStatus(`Authentication failed: ${error.message}`, 'error');
+    showAuthSection();
+  } finally {
+    showLoading(false);
+  }
 }
 
-// Fetch user information from Google API
-function fetchUserInfo(token) {
-    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to fetch user info');
-        }
-        return response.json();
-    })
-    .then(userInfo => {
-        // Store user information
-        chrome.storage.local.set({ 
-            //api call
-            userInfo: userInfo,
-            authTimestamp: Date.now()
-        });
-
-        fetch(`${baseurl}/api/Auth/google`, {  
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userInfo)   
-        })
-        .then(apiResponse => {
-            if (!apiResponse.ok) {
-                throw new Error('Failed to save user info to backend');
-            }
-            return apiResponse.json();
-        })
-       .then(result => {
-    console.log('Backend response:', result);
-
-
-    if (result.token) {
-        chrome.storage.local.set({ userToken: result.token }, () => {
-            console.log("Token saved in local storage:", result.token);
-        });
+/**
+ * Fetch user information from Google API and register with backend
+ * @async
+ * @param {string} token - OAuth token
+ * @returns {Promise<Object>} User information object
+ */
+const fetchUserInfo = async (token) => {
+  try {
+    // Fetch user info from Google API
+    const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user info: ${response.status}`);
     }
+    
+    const userInfo = await response.json();
+    
+    // Store user information locally
+    await new Promise((resolve) => {
+      chrome.storage.local.set({ 
+        userInfo: userInfo,
+        authTimestamp: Date.now()
+      }, resolve);
+    });
 
-       chrome.storage.local.get("userInfo", ({ userInfo }) => {
-            showUserInfo(userInfo);
+    // Register with backend
+    const apiResponse = await fetch(`${BASE_URL}/api/Auth/google`, {  
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userInfo)   
+    });
+    
+    if (!apiResponse.ok) {
+      throw new Error(`Failed to save user info to backend: ${apiResponse.status}`);
+    }
+    
+    const result = await apiResponse.json();
+    console.log('Backend response:', result);
+    
+    // Save token if provided by backend
+    if (result.token) {
+      await new Promise((resolve) => {
+        chrome.storage.local.set({ userToken: result.token }, () => {
+          console.log("Token saved in local storage:", result.token);
+          resolve();
         });
-        showStatus('Successfully authenticated with Google!', 'success');
-            // Send message to content script (e.g., Gmail tab)
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        if (tabs[0]) {
-            try {
-            chrome.tabs.sendMessage(tabs[0].id, { action: "openPopupWindow" });
-        } catch (err) {
-            console.warn("Could not send message:", err);
-        }
-        }
+      });
+    }
+    
+    // Get user info and update UI
+    const { userInfo: storedUserInfo } = await new Promise((resolve) => {
+      chrome.storage.local.get("userInfo", (data) => resolve(data));
     });
-
-    })
-    .catch(error => {
-        console.error('Error fetching user info:', error);
-        showStatus('Failed to fetch user information', 'error');
-        showAuthSection();
+    
+    showUserInfo(storedUserInfo);
+    showStatus('Successfully authenticated with Google!', 'success');
+    
+    // Send message to content script (e.g., Gmail tab)
+    const tabs = await new Promise((resolve) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, resolve);
     });
-})
-.catch(error => {
-        console.error('Error fetching user info:', error);
-        showStatus('Failed to fetch user information', 'error');
-        showAuthSection();
-    });
+    
+    if (tabs[0]) {
+      try {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "openPopupWindow" });
+      } catch (err) {
+        console.warn("Could not send message:", err);
+      }
+    }
+    
+    return userInfo;
+  } catch (error) {
+    console.error('Error in fetchUserInfo:', error);
+    showStatus(`Authentication failed: ${error.message}`, 'error');
+    showAuthSection();
+    throw error;
+  }
 }
 
-// Logout function
-function logout() {
+/**
+ * Log out the current user and clear authentication data
+ * @async
+ */
+const logout = async () => {
+  try {
     // Get the current token
-    chrome.storage.local.get(['userToken'], function(result) {
-        if (result.userToken) {
-            // Revoke the token
-            chrome.identity.removeCachedAuthToken({ token: result.userToken }, function() {
-                // Clear stored data
-                chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], function() {
-                    showAuthSection();
-                    showStatus('Successfully signed out', 'success');
-                });
-            });
-        } else {
-            // Clear stored data even if no token
-            chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], function() {
-                showAuthSection();
-                showStatus('Successfully signed out', 'success');
-            });
-        }
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(['userToken'], resolve);
     });
+    
+    if (result.userToken) {
+      // Revoke the token
+      await new Promise((resolve) => {
+        chrome.identity.removeCachedAuthToken({ token: result.userToken }, resolve);
+      });
+    }
+    
+    // Clear stored data
+    await new Promise((resolve) => {
+      chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], resolve);
+    });
+    
+    showAuthSection();
+    showStatus('Successfully signed out', 'success');
+  } catch (error) {
+    console.error('Logout error:', error);
+    showStatus(`Logout failed: ${error.message}`, 'error');
+  }
 }
 
-// Continue to main app
-function continueToApp() {
+/**
+ * Continue to the main application if authenticated
+ * @async
+ */
+const continueToApp = async () => {
+  try {
     // Check if user is authenticated
-    chrome.storage.local.get(['userToken', 'userInfo'], function(result) {
-        if (result.userToken && result.userInfo) {
-            // Redirect to popup.html by changing the popup URL
-            chrome.action.setPopup({ popup: 'popup.html' });
-            
-            // Close current popup and open the main app
-            window.close();
-            
-            // Open the main popup
-            setTimeout(() => {
-                chrome.action.openPopup();
-            }, 100);
-        } else {
-            showStatus('Please authenticate first', 'error');
-        }
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(['userToken', 'userInfo'], resolve);
     });
+    
+    if (result.userToken && result.userInfo) {
+      // Redirect to popup.html by changing the popup URL
+      await new Promise((resolve) => {
+        chrome.action.setPopup({ popup: 'popup.html' }, resolve);
+      });
+      
+      // Close current popup and open the main app
+      window.close();
+      
+      // Open the main popup
+      setTimeout(() => {
+        chrome.action.openPopup();
+      }, 100);
+    } else {
+      showStatus('Please authenticate first', 'error');
+    }
+  } catch (error) {
+    console.error('Navigation error:', error);
+    showStatus(`Failed to continue: ${error.message}`, 'error');
+  }
 }
 
-// Utility function to check token validity
-function isTokenValid(callback) {
-    chrome.storage.local.get(['userToken', 'authTimestamp'], function(result) {
-        if (!result.userToken || !result.authTimestamp) {
-            callback(false);
-            return;
-        }
-        
-        // Check if token is older than 1 hour (basic check)
-        const tokenAge = Date.now() - result.authTimestamp;
-        const oneHour = 60 * 60 * 1000;
-        
-        if (tokenAge > oneHour) {
-            // Test the token with a simple API call
-            fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                headers: {
-                    'Authorization': `Bearer ${result.userToken}`
-                }
-            })
-            .then(response => {
-                callback(response.ok);
-            })
-            .catch(() => {
-                callback(false);
-            });
-        } else {
-            callback(true);
-        }
+/**
+ * Check if the stored token is valid
+ * @async
+ * @returns {Promise<boolean>} True if token is valid, false otherwise
+ */
+const isTokenValid = async () => {
+  try {
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(['userToken', 'authTimestamp'], resolve);
     });
-}
+    
+    if (!result.userToken || !result.authTimestamp) {
+      return false;
+    }
+    
+    // Check if token is older than 1 hour (basic check)
+    const tokenAge = Date.now() - result.authTimestamp;
+    const oneHour = 60 * 60 * 1000;
+    
+    if (tokenAge > oneHour) {
+      // Test the token with a simple API call
+      try {
+        const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+          headers: {
+            'Authorization': `Bearer ${result.userToken}`
+          }
+        });
+        return response.ok;
+      } catch (error) {
+        console.error('Token validation error:', error);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error('Error checking token validity:', error);
+    return false;
+  }
+};
 
-// Auto-refresh token if needed
-function refreshTokenIfNeeded() {
-    isTokenValid(function(valid) {
-        if (!valid) {
-            // Clear invalid token and show auth section
-            chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp']);
-            showAuthSection();
-            showStatus('Session expired. Please sign in again.', 'error');
-        }
-    });
-}
+/**
+ * Auto-refresh token if needed or clear invalid tokens
+ * @async
+ */
+const refreshTokenIfNeeded = async () => {
+  try {
+    const valid = await isTokenValid();
+    if (!valid) {
+      // Clear invalid token and show auth section
+      await new Promise((resolve) => {
+        chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], resolve);
+      });
+      showAuthSection();
+      showStatus('Session expired. Please sign in again.', 'error');
+    }
+  } catch (error) {
+    console.error('Token refresh error:', error);
+  }
+};
 
-// Check token validity on page load
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(refreshTokenIfNeeded, 1000);
+// Check token validity on page load with a slight delay
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(async () => {
+    await refreshTokenIfNeeded();
+  }, 1000);
 });
 
 
