@@ -104,6 +104,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Return true to indicate async response
     return true;
   }
+  
+  if (request.action === "sendEmailViaGmail") {
+    (async () => {
+      try {
+        // Use getAccessTokenInteractive specifically for Gmail API
+        // This ensures we get a token with the right scopes for Gmail
+        const token = await getAccessTokenInteractive(true);
+        if (!token) {
+          console.error("No Gmail access token found. Please log in again.");
+          sendResponse({ success: false, error: "Unauthorized: No Gmail access token" });
+          return;
+        }
+        
+        // Call the sendGmailEmail function with the Gmail token and email data
+        const result = await sendGmailEmail(token, request.emailData);
+        sendResponse({ success: true, data: result });
+      } catch (error) {
+        console.error('Gmail API Error:', error);
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
+    
+    // Return true to indicate async response
+    return true;
+  }
 });
 
 
