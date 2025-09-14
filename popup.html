@@ -32,10 +32,6 @@
   align-items: center; 
   margin-bottom: 20px;
 }
-.main-content {
-  text-align: left;
-}
-
 /* Header */
 .header h1 {
   display: flex;
@@ -110,76 +106,22 @@ button {
   background: #4f46e5;
 }
 
-/* .btn-secondary {
+.btn-secondary {
   background: #f3f4f6;
   color: #374151;
 }
 .btn-secondary:hover {
   background: #e5e7eb;
-} */
-
-.btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-  padding: 8px 16px;   /* add padding if needed */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: inline-block; /* force inline behavior */
 }
-
-.btn-secondary:hover {
-   background: #16a34a;
-}
-#mailActions {
-  display: flex;     
-  justify-content: flex-end;      /* Align children in a row */
-  gap: 50px;               /* Space between buttons */
-  align-items: center;     /* Vertically center buttons */
-  /* margin-top: 10px;        */
-  width: 100%;       
-}
-#mailActions button {
-  display: inline-block !important; /* override any block styling */
-  width: auto !important;           /* shrink to content */
-  flex-shrink: 0;       
-  margin: 0 25px;               /* prevent shrinking */
-}
-#previewBtn {
-   background: #16a34a;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: inline-block;
-}
-#previewBtn:hover {
-  background: #16a34a;
-}
-/* .btn-success {
-  
-  padding: 8px 16px;
-  border: none;
-
-  border-radius: 5px;
-  cursor: pointer;
-}
-.btn-success:hover {
-  background: #16a34a;
-} */
 
 .btn-success {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: inline-block; /* force inline behavior */
+  background: #22c55e;
+  color: white;
 }
-
 .btn-success:hover {
   background: #16a34a;
 }
+
 /* Info boxes */
 .info-box,
 .email-preview {
@@ -259,7 +201,7 @@ button {
       .button-group {
         display: flex;
         gap: 10px;
-        margin-top: 10px;
+        margin-top: 20px;
       }
 
       button {
@@ -274,14 +216,8 @@ button {
       }
 
       .btn-primary {
-        /* background: #4299e1;
-        color: white; */
-         background: #2d9cdb;
-  color: white;
-  padding: 8px 22px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+        background: #4299e1;
+        color: white;
       }
 
       .btn-primary:hover {
@@ -312,6 +248,8 @@ button {
         margin-top: 15px;
         display: none;
       }
+
+      
       .subject-textarea {
             background: white;
             padding: 10px;
@@ -325,6 +263,7 @@ button {
             resize: vertical;
             box-sizing: border-box;
         }
+      
 
       .status.success {
         background: #f0fff4;
@@ -363,8 +302,7 @@ button {
           transform: rotate(360deg);
         }
       }
-     
-      
+
       .email-preview {
         background: #f7fafc;
         border: 1px solid #e2e8f0;
@@ -417,158 +355,16 @@ button {
   border: 2px solid #fff;
 }
 .resume-box {
-  /* display: flex;
- 
-  flex-direction: column;
+  display: flex;
+  justify-content: center; 
    flex-direction: column; 
   align-items: center;
   gap: 8px;
   text-align: center;
   margin-top: 30px;
-  color: #374151; */
-   /* width: 100%;
-  margin: 20px auto;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #f9fafb; */
-  display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 6px;
+  color: #374151;
 }
 
-.resume-row {
-  /* display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(99,102,241,0.04); */
-   /* display: flex;
-  align-items: center;
-  gap: 8px;           
-  background: #fff;
-  border-radius: 8px;
-  padding: 8px 12px;  
-  margin-bottom: 6px;
-  box-shadow: 0 2px 6px rgba(99,102,241,0.04); */
-  display: flex;              /* aligns children in a row */
-  justify-content: space-between; /* pushes file name left and status right */
-  align-items: center;
-  /* padding: 6px 0;
-  gap: 8px;  
-  border-bottom: 1px solid #ddd; */
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(99,102,241,0.05);
-
-}
-.resume-row .file-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.file-icon-circle {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background: #eef6ff; /* pale blue */
-  color: #2563eb;
-  font-size: 16px;
-}
-
-.resume-row .file-icon {
-  font-size: 18px;
-}
-
-.resume-row .file-link {
-  color: #2563eb;
-  text-decoration: underline;
-  font-weight: 500;
-  /* cursor: pointer; */
-  /* flex-grow: 1;  */
-}
-.resume-row .file-link:hover {
-  color: #1e40af;
-}
-.status-right {
-  /* display: flex;
-  align-items: center;
-  gap: 10px; */
-  position: relative;
-  padding-right: 36px; 
-}
-
-/* "Status :" unchanged, value styled */
-.status-text {
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
-}
-.status-value {
-  color: #16a34a; /* green for parsed */
-  margin-left: 6px;
-  font-weight: 700;
-}
-
-/* icon container — we will insert inline SVGs via JS */
-.status-icon svg { width: 18px; height: 18px; vertical-align: middle; }
-
-.resume-row .status {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;      /* gap between text and icon */
-  
-}
-.resume-row .status.success {
-  color: #22c55e;
-}
-.resume-row .status.error {
-  color: #ef4444;
-}
-.status-icon {
-  /* width: 18px;
-  height: 18px; */
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 26px;
-  height: 26px;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-.resume-row .status-icon {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-}
-#resumeUploadBox {
-  text-align: center;
-  margin: 20px auto;
-}
-#uploadedResumeName {
-  font-weight: 500;
-  text-align: left;
-}
-
-#resumeStatus {
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 .user-name-small {
   font-weight: 500;
   max-width: 120px;
@@ -639,6 +435,7 @@ padding: 4px 10px;
   width: fit-content;
   text-align: center;
 }
+
 .email-preview {
             background: #f7fafc;
             border: 1px solid #e2e8f0;
@@ -648,7 +445,8 @@ padding: 4px 10px;
             display: block;
             max-width: 800px;
         }
-         .email-preview h4 {
+        
+        .email-preview h4 {
             margin: 0 0 10px 0;
             color: #2d3748;
             display: flex;
@@ -702,185 +500,75 @@ padding: 4px 10px;
             font-weight: 500;
         }
         
-.profile-menu {
-  position: relative;
-  display: inline-block;
-  margin-left: auto;
-}
-
-.user-badge {
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 40px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-  padding: 10px;
-  z-index: 1000;
-  min-width: 160px;
-}
-
-.dropdown.show {
-  display: block;
-}
-
-.toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 14px;
-  color: #374151;
-}
-
-/* Switch style */
-.toggle input {
-  display: none;
-}
-
-.toggle .slider {
-  width: 34px;
-  height: 18px;
-  background: #d1d5db;
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-}
-
-.toggle .slider::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  background: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-.toggle input:checked + .slider {
-  background: #22c55e;
-}
-
-.toggle input:checked + .slider::before {
-  transform: translateX(16px);
-}
-
-/* Dropdown box */
-.dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 50px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  width: 200px;
-  z-index: 1000;
-}
-
-/* Show dropdown when toggled */
-.dropdown.show {
-  display: block;
-}
-
-/* Developer Mode label + toggle */
-.toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-}
-
-/* Make logout button bigger */
-.logout-btn-small {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 15px;
-  font-weight: bold;
-  background-color: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.logout-btn-small:hover {
-  background-color: #dc2626;
-}
-
-/* Profile menu container */
-.profile-menu {
-  position: relative; /* Needed for dropdown positioning */
-}
-
-.status-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  background: #f9fafb;
-  padding: 6px 12px;
-  border-radius: 12px;
-  width: fit-content;
-}
-
-.status-icon {
-  width: 18px;
-  height: 18px;
-   /* vertical-align: middle; */
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  background-color: red; /* default = OFF */
-}
-
-.token-count {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-}
-
-      .status-row-main {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.status-row-main .status-icon {
-  width: 18px;
-  height: 18px;
-}
-.status-icon-inline {
-  width: 18px;
-  height: 18px;
-  display: block;   /* ensures proper alignment */
-  position: static; /* override absolute from global .status-icon */
-  transform: none;  /* remove any transform */
-}
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        /* Demo setup styles */
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .demo-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .demo-controls h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .generate-btn {
+            padding: 10px 20px;
+            background: #805ad5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .generate-btn:hover {
+            background: #6b46c1;
+        }
+      
+        .subject-content {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 10px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
     </style>
   </head>
   <body>
@@ -890,8 +578,8 @@ padding: 4px 10px;
   <img src="icons/icon16.png" alt="Career Sync" class="career-icon" />
   Career Sync
 </h1>
-  <!-- <div class="sub-header">
-    <div class="right">
+  <div class="sub-header">
+    <div class="left">
       <div class="user-badge" id="userBadge" style="display: none">
         <img class="user-avatar-small" id="userAvatarSmall" src="" alt="" />
         <span class="user-name-small" id="userNameSmall"></span>
@@ -901,39 +589,8 @@ padding: 4px 10px;
       <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
     </div>
   </div>
-</div> -->
-
-<div class="sub-header">
-  <div class="profile-menu">
-    <div class="user-badge" id="userBadge">
-      <img class="user-avatar-small" id="userAvatarSmall" src="" alt="U" />
-      <span class="user-name-small" id="userNameSmall">User</span>
-    </div>
-<!-- 
-    <div class="status-row">
-  <img src="icons/icon16.png" alt="Career Sync" class="status-icon" />
-  <span class="status-dot" id="devStatusDot"></span>
-  <span class="token-count" id="tokenCount">15</span>
-</div> -->
-<div class="status-row status-row-main">
-  <img src="icons/icon16.png" alt="Career Sync" class="status-icon-inline" />
-  <span class="status-dot" id="devStatusDot"></span>
-  <span class="token-count" id="tokenCount">15</span>
 </div>
 
-    <div class="dropdown" id="profileDropdown">
-      <label class="toggle">
-        <span>Developer Mode</span>
-        <input type="checkbox" id="devModeToggle" />
-        <span class="slider"></span>
-      </label>
-      <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
-    </div>
-  </div>
-</div>
-
-
-      <div class = "main-content">
       <div class="section">
         <h3>Selected Text</h3>
         <div  class="info-box"  id="selectedText">
@@ -952,71 +609,32 @@ padding: 4px 10px;
 
    
 
-    <!-- <div class="section">
+    <div class="section">
   <h3>Upload Resume</h3>
 
-  
+  <!-- Big upload box (only shown when no resume stored yet) -->
   <label class="upload-box" for="resumeInput" id="resumeUploadBox">
     <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" />
     <i>📄</i>
     <p>Click to upload or drag & drop your Resume</p>
     <small>(PDF, DOC, DOCX)</small>
     <div class="file-name" id="fileName"></div>
-    
-  </label>
-<div style="display:flex; justify-content:center; margin-top:12px;">
-    <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
-    <span id="parseLoading" style="display:none; margin-left:10px;">⏳ Parsing...</span>
-  </div>
-
-<div id="resumeRows" style="margin-top: 12px;"></div>
-
-<div style="display:flex; justify-content:center; margin-top:10px;">
-    <button id="replaceResumeBtn" class="btn-primary" style="display:none;">Update</button>
-  </div>
-</div> -->
-<div class="section">
-  <h3>Upload Resume</h3>
-
-  <!-- Big upload box -->
-  <label class="upload-box" for="resumeInput" id="resumeUploadBox">
-    <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" />
-    <div class="upload-inner">
-      <span class="upload-icon">📄</span>
-      <div>
-        <p class="upload-text">Click to upload or drag & drop your Resume</p>
-        <small>(PDF, DOC, DOCX)</small>
-      </div>
-    </div>
-    <div class="file-name" id="fileName"></div>
   </label>
 
-  <!-- parse button + loader (hidden until file chosen) -->
-  <div style="display:flex; justify-content:center; margin-top:12px;">
-    <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
-    <span id="parseLoading" style="display:none; margin-left:10px;">⏳ Parsing...</span>
-  </div>
+  <button id="parseResumeBtn" class="btn-primary" style="display:none">Parse Resume</button>
+  <span id="parseLoading" style="display:none">⏳ Parsing...</span>
+  <span id="parseSuccess" style="display:none; color:green;">✔ Parsed!</span>
+</div>
 
-  <!-- Parsed row (hidden until parse or saved resume) -->
-  <div id="resumeRows" style="margin-top: 12px; display:none;">
-    <div class="resume-row" id="parsedRow">
-      <div class="file-left">
-        <div class="file-icon-circle">📄</div>
-        <a id="parsedFileLink" class="file-link" href="#" target="_blank"></a>
-      </div>
-
-      <div class="status-right">
-        <div id="resumeStatusText" class="status-text">Status : <span id="statusLabel" class="status-value">Parsed</span></div>
-        <div id="statusIcon" class="status-icon"></div>
-      </div>
-    </div>
-
-    <!-- Update button centered below (as in your screenshot) -->
-    <div style="display:flex; justify-content:center; margin-top:12px;">
-      <button id="replaceResumeBtn" class="btn-primary" style="display:none;">Update</button>
-    </div>
+  <!-- Small update box (only shown when resume already exists) -->
+  <div id="resumeSmallBox" class="resume-box" style="display:none;">
+  <span id="uploadedResumeName">filename.pdf</span>
+   <!-- <a id="uploadedResumeName" href= target="_blank" class="file-link">filename.pdf</a> -->
+  <button id="replaceResumeBtn" class="glassy-btn">📤 Update Resume</button>
   </div>
 </div>
+
+
 
       <div class="section">
         <div class="section-header">
@@ -1065,10 +683,10 @@ padding: 4px 10px;
             id="customTemplate"
             placeholder="Enter your custom email template...
                 
-Available placeholders:
-{selectedText} - Selected job text
-{pageUrl} - Job page URL  
-{pageTitle} - Job page title"
+              Available placeholders:
+              {selectedText} - Selected job text
+              {pageUrl} - Job page URL  
+              {pageTitle} - Job page title"
           ></textarea>
         </div>
       </div>
@@ -1076,14 +694,13 @@ Available placeholders:
       
 
     <div class="button-group" >
-        <button class="btn-primary" id="sendBtn">Generate Mail</button>
+        <button class="btn-primary" id="sendBtn">Send to Server</button>
     </div>
 
       <div class="button-group" id="mailActions" style="display: none">
         <button class="btn-secondary" id="previewBtn">Preview</button>
-         <button class="btn-success" id="copyBtn" style="display: none">Copy Email</button>
         <button class="btn-success" id="gmailBtn">Send via Gmail</button>
-       
+        <button class="btn-success" id="copyBtn" style="display: none">Copy Email</button>
       </div>
 
       <div class="loading" id="loading">
@@ -1092,7 +709,14 @@ Available placeholders:
       </div>
 
       <div class="status" id="status"></div>
-       <div class="email-preview" id="emailPreview" style="display: none;">
+
+      <!-- <div class="email-preview" id="emailPreview">
+        <h4>Email Preview</h4>
+        <div class="email-content" id="emailContent"></div>
+      </div> -->
+
+
+      <div class="email-preview" id="emailPreview" style="display: none;">
     <h4>
         Email Preview
         <div class="preview-controls">
@@ -1112,14 +736,6 @@ Available placeholders:
     
       </div>
     </div>
-
-
-      <div class="email-preview" id="emailPreview">
-        <h4>Email Preview</h4>
-        <div class="email-content" id="emailContent"></div>
-      </div>
-    </div>
-
     <script src="popup.js"></script>
   </body>
 </html>

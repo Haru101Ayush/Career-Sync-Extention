@@ -7,8 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     loadSavedSettings();
      initResumeUpload();
-     displayTokenCount();
-  setupDevModeToggle();
 });
 
 // Check if user is authenticated
@@ -72,44 +70,6 @@ function getToken() {
         });
     });
 }
-
-async function displayTokenCount() {
- chrome.storage.local.get(['tokenCount'], function(result) {
-    const tokenCountEl = document.getElementById('tokenCount');
-     const devStatusDot = document.getElementById('devStatusDot');
-      const count = result.tokenCount !== undefined ? result.tokenCount : 0;
-    if (tokenCountEl) {
-      tokenCountEl.textContent = count;
-    }
-     if (devStatusDot) {
-      devStatusDot.style.backgroundColor = count > 0 ? '#22c55e' : '#ef4444'; // green or red
-    }
-  });
-}
-
-function setupDevModeToggle() {
-  const devToggle = document.getElementById('devModeToggle');
-  const devStatusDot = document.getElementById('devStatusDot'); 
- const settingsSection = document.querySelector('.section-header').parentElement; // Settings container
-  if (!devToggle || !devStatusDot || !settingsSection) return;
-
-  // Load saved dev mode state
-  chrome.storage.local.get('devMode', (result) => {
-    const isDev = result.devMode || false;
-    devToggle.checked = isDev;
-    // devStatusDot.style.backgroundColor = isDev ? 'green' : 'red'; 
-     settingsSection.style.display = isDev ? 'block' : 'none';
-});
-
-  // On toggle change → save + update dot
-  devToggle.addEventListener('change', () => {
-    const isDev = devToggle.checked;
-    chrome.storage.local.set({ devMode: isDev });
-    // devStatusDot.style.backgroundColor = isDev ? 'green' : 'red'; 
-  
-settingsSection.style.display = isDev ? 'block' : 'none';});
-}
-
 
 
 // Logout function
@@ -194,22 +154,7 @@ function setupEventListeners() {
 
     // Logout button in header
     document.getElementById('logoutBtnSmall').addEventListener('click', logout);
-    
-const userBadge = document.getElementById("userBadge");
-const dropdown = document.getElementById("profileDropdown");
 
-userBadge.addEventListener("click", () => {
-  dropdown.classList.toggle("show");
-});
-
-// Close dropdown when clicking outside
-document.addEventListener("click", (event) => {
-  if (!userBadge.contains(event.target) && !dropdown.contains(event.target)) {
-    dropdown.classList.remove("show");
-  }
-});
-
-     
     // Save settings type when changed
     document.getElementById('settingsType').addEventListener('change', function() {
         chrome.storage.local.set({ settingsType: this.value });
@@ -273,18 +218,20 @@ const replaceResumeBtn = document.getElementById("replaceResumeBtn");
 const fileNameEl = document.getElementById("fileName");
     const parseResumeBtn = document.getElementById("parseResumeBtn");
     const parseLoading = document.getElementById("parseLoading");
-    // const parseSuccess = document.getElementById("parseSuccess");
- const resumeRows = document.getElementById("resumeRows");
-  const parsedFileLink = document.getElementById("parsedFileLink");
-  const statusLabel = document.getElementById("statusLabel");
-  const statusIcon = document.getElementById("statusIcon");
-  //const replaceResumeBtn = document.getElementById("replaceResumeBtn");
+    const parseSuccess = document.getElementById("parseSuccess");
+
 
 // Check if resume already stored in localStorage
 chrome.storage.local.get(['resumeSummary', 'resumeFileName'], function(result) {
     if (result.resumeSummary && result.resumeFileName) {
-          renderParsedRow(result.resumeFileName, false);
-        
+        // Resume already exists → show small update box
+        uploadedResumeName.textContent = result.resumeFileName + " ✔";
+        resumeUploadBox.style.display = "none";
+        resumeSmallBox.style.display = "flex";
+    } else {
+        // No resume yet → show big upload box
+        resumeUploadBox.style.display = "block";
+        resumeSmallBox.style.display = "flex";
     }
 });
 
@@ -294,12 +241,13 @@ resumeInput.addEventListener("change", function () {
     if (this.files.length > 0) {
         const file = this.files[0];
 
-        // uploadedResumeName.textContent = file.name;    
-        fileNameEl.textContent = file.name;
+        uploadedResumeName.textContent = file.name;    
+        uploadedResumeName.style.pointerEvents = "none";    
+        uploadedResumeName.target = "_blank"; 
           parseResumeBtn.style.display = "inline-block";
             parseResumeBtn.disabled = false;
             parseLoading.style.display = "none";
-        
+            parseSuccess.style.display = "none";
         
     }
 });
@@ -316,29 +264,29 @@ parseResumeBtn.addEventListener("click", function () {
     
     uploadResumeToParser(file)
         .then(result => {
-            // console.log(" Pa
-            // rsed Resume:", result);
-             parseLoading.style.display = "none";
-        parseResumeBtn.style.display = "none";
+            console.log(" Parsed Resume:", result);
+
+
             chrome.storage.local.set({
                 resumeSummary: result.summary || JSON.stringify(result),
                 resumeFileName: file.name
             }, function () {
-const hadError = !!result.error;
-          renderParsedRow(file.name, hadError);
-                
+                // Hide loader, show success
+                parseLoading.style.display = "none";
+                parseSuccess.style.display = "inline";
+                parseSuccess.style.display = "inline";
+                // Switch to small box
+                resumeUploadBox.style.display = "none";
+                resumeSmallBox.style.display = "flex";
+                uploadedResumeName.textContent = file.name + " ✔";
                 
             });
 
 }).catch(err => {
-            
-        
-console.error("Parse failed", err);
-        parseLoading.style.display = "none";
-        parseResumeBtn.disabled = false;
-
-        // show error row
-        renderParsedRow(resumeInput.files[0].name, true);
+            console.error("Error parsing resume:", err);
+            parseLoading.style.display = "none";
+            parseResumeBtn.disabled = false;
+            showStatus("Failed to parse resume", "error");
         });
 });
            
@@ -346,57 +294,14 @@ console.error("Parse failed", err);
 // Replace resume
 replaceResumeBtn.addEventListener("click", function () {
    
-    chrome.storage.local.remove(['resumeSummary', 'resumeFileName'], function() {
-    resumeUploadBox.style.display = "block";
-      resumeRows.style.display = "none";
-      parseResumeBtn.style.display = "none";
-      parseLoading.style.display = "none";
-      resumeInput.value = "";
-      fileNameEl.textContent = "";
+        resumeInput.value = "";
+        fileNameEl.textContent = "none";
+        parseResumeBtn.style.display = "none";
+        parseSuccess.style.display = "none";
+        resumeUploadBox.style.display = "block";
+        resumeSmallBox.style.display = "none";
 });
 
-});
-function renderParsedRow(fileName, isError) {
-    // hide upload area
-    resumeUploadBox.style.display = "none";
-
-    // fill filename link
-    parsedFileLink.textContent = fileName;
-    // optional: if you have a blob or url you can set parsedFileLink.href = url
-    parsedFileLink.href = "#";
-
-    // status text and icon
-    if (isError) {
-      statusLabel.innerHTML = `Error <span class="status-icon">⚠️</span>`;
-  statusLabel.style.color = "#ef4444"; 
-    //   statusIcon.innerHTML = `
-    //     <svg viewBox="0 0 20 20" fill="#ef4444" width="18" height="18">
-    //       <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4h2v2h-2v-2zm0-8h2v6h-2V6z"/>
-    //     </svg>`;
-     statusIcon.style.backgroundImage = `url("${chrome.runtime.getURL('icons/error.png')}")`;
-    statusIcon.style.backgroundSize = "contain";
-    statusIcon.style.backgroundRepeat = "no-repeat";
-    statusIcon.style.backgroundPosition = "center";
-    } else {
-      statusLabel.textContent = "Parsed";
-      statusLabel.style.color = "#16a34a";
-    //   statusIcon.innerHTML = `
-    //     <svg viewBox="0 0 20 20" fill="#16a34a" width="18" height="18">
-    //       <path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586l-3.293-3.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/>
-    //     </svg>`;
-    // }
-    statusIcon.style.backgroundImage = `url("${chrome.runtime.getURL('icons/parsed.png')}")`;
-    statusIcon.style.backgroundSize = "contain";
-    statusIcon.style.backgroundRepeat = "no-repeat";
-    statusIcon.style.backgroundPosition = "center";
-
-    // show the parsed row + update button
-   
-  }
-   resumeRows.style.display = "block";
-    replaceResumeBtn.style.display = "inline-block";
-
-}
 }
 
 
@@ -426,24 +331,6 @@ function loadSavedSettings() {
                 document.getElementById('customTemplateGroup').style.display = 'block';
             }
         }
-    });
-}
-
-// Preview email functionality
-function previewEmail() {
-    chrome.storage.local.get(['jobData'], function(result) {
-        if (!result.jobData) {
-            showStatus('No job data available', 'error');
-            return;
-        }
-
-        const template = document.getElementById('emailTemplate').value;
-        const customTemplate = document.getElementById('customTemplate').value;
-        const emailContent = mail;
-        
-        document.getElementById('emailContent').innerHTML = emailContent;
-        document.getElementById('emailPreview').style.display = 'block';
-        document.getElementById('copyBtn').style.display = 'block';
     });
 }
 
@@ -524,7 +411,7 @@ const profile_data = resumeSummary;
   showLoading(true);
 
   try {
-    const template = document.getElementById('emailTemplate').value;
+        const template = document.getElementById('emailTemplate').value;
         const customTemplate = document.getElementById('customTemplate').value;
 
     const response = await sendMessageAsync({
@@ -534,20 +421,17 @@ const profile_data = resumeSummary;
     });
 
     showLoading(false);
-  
-    if (response && (response.success || response.data.tokenCount !== undefined)) {
+
+    if (response && response.success) {
       showStatus('Successfully sent to server!', 'success');
-      if (response.data.tokenCount !== undefined) {
-        chrome.storage.local.set({ tokenCount: response.data.tokenCount });
-        displayTokenCount(); // Update UI immediately
-      }
+
       const jobDetails = {
-        subject: response.data.model.subject,
-        body: response.data.model.body,
-        recipient_mail: response.data.model.recipient_mail,
-        company_name: response.data.model.company_name,
-        location: response.data.model.location,
-        techstack: response.data.model.techstack
+        subject: response.data.subject,
+        body: response.data.body,
+        recipient_mail: response.data.recipient_mail,
+        company_name: response.data.company_name,
+        location: response.data.location,
+        techstack: response.data.techstack
       };
 
       localStorage.setItem('jobDetails', JSON.stringify(jobDetails));
@@ -615,6 +499,8 @@ function showLoading(show, message = 'Sending...') {
         gmailBtn.textContent = 'Send via Gmail';
     }
 }
+
+
 function previewEmail() {
             const jobDetailsStr = localStorage.getItem('jobDetails');
             const jobDetails = jobDetailsStr ? JSON.parse(jobDetailsStr) : null;
