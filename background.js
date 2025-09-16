@@ -12,9 +12,10 @@ chrome.runtime.onInstalled.addListener(() => {
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "shareToJobEmail") {
+    
     // Check if user is authenticated first
-    chrome.storage.local.get(['userToken'], function(result) {
-      if (!result.userToken) {
+    chrome.storage.local.get(['Apikey'], function(result) {
+      if (!result.Apikey) {
         // User not authenticated, open auth popup
         chrome.action.setPopup({ popup: 'auth.html' });
         chrome.action.openPopup();
@@ -40,11 +41,31 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     });
   }
 });
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(",")[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
 
 function getToken() {
     return new Promise((resolve) => {
-        chrome.storage.local.get(['userToken'], (result) => {
-            resolve(result.userToken || null);
+        chrome.storage.local.get(['Apikey'], (result) => {
+            resolve(result.Apikey || null);
         });
     });
 }
@@ -53,9 +74,9 @@ function getToken() {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "checkAuthStatus") {
-    chrome.storage.local.get(['userToken', 'userInfo'], function(result) {
+    chrome.storage.local.get(['Apikey', 'userInfo'], function(result) {
       sendResponse({
-        authenticated: !!(result.userToken && result.userInfo),
+        authenticated: !!(result.Apikey && result.userInfo),
         userInfo: result.userInfo || null
       });
     });
@@ -116,9 +137,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           sendResponse({ success: false, error: "Unauthorized: No Gmail access token" });
           return;
         }
-        
+       let attachments = [];
+        // Check if an attachment was sent from the popup
+        if (request.emailData.attachments && request.emailData.attachments.length > 0) {
+          const { name, type, data } = request.emailData.attachments[0];
+          
+          // Convert the array of numbers back to a Uint8Array
+          const fileData = new Uint8Array(data);
+          // Convert the Uint8Array to a Base64 string
+          const base64Data = arrayBufferToBase64(fileData);
+          
+          attachments.push({
+            filename: name,
+            mimeType: type,
+            data: base64Data
+          });
+        }
+
+        const finalEmailData = {
+          to: request.emailData.to,
+          subject: request.emailData.subject,
+          body: request.emailData.body,
+          isHtml: request.emailData.isHtml,
+          attachments: attachments
+        };
+
         // Call the sendGmailEmail function with the Gmail token and email data
-        const result = await sendGmailEmail(token, request.emailData);
+        const result = await sendGmailEmail(token, finalEmailData);
         sendResponse({ success: true, data: result });
       } catch (error) {
         console.error('Gmail API Error:', error);
@@ -134,23 +179,46 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Function to send email via Gmail API
 async function sendGmailEmail(token, emailData) {
-  const { to, subject, body, isHtml } = emailData;
-  
-  // Create email message in RFC 2822 format
-  const email = [
+  const { to, subject, body, isHtml, attachments = [] } = emailData;
+  const boundary = "foo_bar_baz_" + Date.now();
+
+  // Base part (body)
+  let mimeParts = [
     `To: ${to}`,
     `Subject: ${subject}`,
-    'Content-Type: ' + (isHtml ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8'),
-    '',
+    `MIME-Version: 1.0`,
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    ``,
+    `--${boundary}`,
+    `Content-Type: ${isHtml ? 'text/html; charset="UTF-8"' : 'text/plain; charset="UTF-8"'}`,
+    `Content-Transfer-Encoding: 7bit`,
+    ``,
     body
-  ].join('\r\n');
-  
-  // Encode email in base64url format
-  const encodedEmail = btoa(email)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-  
+  ];
+
+  for (const att of attachments) {
+      const base64Data = att.data;
+       mimeParts.push(
+      ``,
+      `--${boundary}`,
+      `Content-Type: ${att.mimeType}; name="${att.filename}"`,
+      `Content-Disposition: attachment; filename="${att.filename}"`,
+      `Content-Transfer-Encoding: base64`,
+      ``,
+     base64Data
+    );
+  }
+
+  // Closing boundary
+  mimeParts.push(``, `--${boundary}--`);
+
+
+  const mimeMessage = mimeParts.join("\r\n");
+
+  const encodedEmail = btoa(unescape(encodeURIComponent(mimeMessage)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
   try {
     const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
       method: 'POST',
@@ -168,7 +236,20 @@ async function sendGmailEmail(token, emailData) {
       throw new Error(errorData.error?.message || 'Failed to send email');
     }
     
-    return await response.json();
+    // return await response.json();
+    const result = await response.json();
+    console.log("Send response:", result);
+
+    // Fetch full Gmail message to verify attachment
+    const messageId = result.id;
+    const fullResponse = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const fullMessage = await fullResponse.json();
+    console.log("Full Gmail Message:", fullMessage);
+
+    return { result, fullMessage }; // return both
+    
   } catch (error) {
     console.error('Gmail API Error:', error);
     throw error;
@@ -177,21 +258,23 @@ async function sendGmailEmail(token, emailData) {
 
 // Monitor authentication status
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === 'local' && changes.userToken) {
-    if (changes.userToken.newValue) {
+  if (namespace === 'local') {
+    chrome.storage.local.get(['userToken', 'Apikey'], (result) => {
+    if (result.userToken && result.Apikey) {
       // User logged in, switch to main popup
       chrome.action.setPopup({ popup: 'popup.html' });
     } else {
       // User logged out, switch to auth popup
       chrome.action.setPopup({ popup: 'auth.html' });
     }
+  });
   }
 });
 
 // Initialize popup based on auth status
 chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.local.get(['userToken'], function(result) {
-    if (result.userToken) {
+  chrome.storage.local.get(['userToken', 'Apikey'], function(result) {
+    if (result.userToken && result.Apikey) {
       chrome.action.setPopup({ popup: 'popup.html' });
     } else {
       chrome.action.setPopup({ popup: 'auth.html' });

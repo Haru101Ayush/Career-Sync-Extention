@@ -60,6 +60,14 @@ async function checkAuthStatus() {
         return false;
     }
 }
+function fileToArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
 
 /**
  * Send email via Gmail API
@@ -75,16 +83,43 @@ async function sendViaGmail() {
             return;
         }
 
-        showLoading(true, 'Sending email via Gmail...');
+        //showLoading(true, 'Sending email via Gmail...');
+        const resumeFile = document.getElementById("resumeInput").files[0];
+    // let attachment = null;
+
+    // if (resumeFile) {
+    //   const base64Data = await fileToBase64(resumeFile);
+    //   attachment = {
+    //     filename: resumeFile.name,
+    //     mimeType: resumeFile.type || "application/pdf",
+    //     data: base64Data
+    //   };
+    // }
+     if (!resumeFile) {
+      showStatus('Please select a resume file.', 'error');
+      return;
+    }
+     const fileData = await fileToArrayBuffer(resumeFile);
+
+    // Create a serializable data object for the attachment
+    const attachment = {
+      name: resumeFile.name,
+      type: resumeFile.type || "application/pdf",
+      // Convert the ArrayBuffer to a serializable array of numbers
+      data: Array.from(new Uint8Array(fileData))
+    };
 
         const emailData = {
             to: jobDetails.recipient_mail,
             subject: jobDetails.subject || 'No Subject',
             body: jobDetails.body || '',
-            isHtml: false
+            isHtml: false,
+             attachments: [attachment]
         };
-
+      showLoading(true, 'Sending email via Gmail...');
         const response = await new Promise((resolve, reject) => {
+           console.log("Email data being sent:", emailData);
+
             chrome.runtime.sendMessage({
                 action: 'sendEmailViaGmail',
                 emailData: emailData
@@ -119,7 +154,7 @@ async function sendViaGmail() {
 async function getToken() {
     try {
         const result = await new Promise((resolve, reject) => {
-            chrome.storage.local.get(['userToken'], (result) => {
+            chrome.storage.local.get(['Apikey'], (result) => {
                 if (chrome.runtime.lastError) {
                     reject(new Error(chrome.runtime.lastError.message));
                     return;
@@ -127,7 +162,7 @@ async function getToken() {
                 resolve(result);
             });
         });
-        return result.userToken || null;
+        return result.Apikey || null;
     } catch (error) {
         console.error('Error getting token:', error);
         return null;

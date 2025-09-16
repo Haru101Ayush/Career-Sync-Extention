@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
  * Check if user is authenticated and show appropriate UI
  */
 const checkAuthStatus = () => {
-  chrome.storage.local.get(['userToken', 'userInfo'], (result) => {
-    if (result.userToken && result.userInfo) {
+  chrome.storage.local.get(['Apikey', 'userInfo'], (result) => {
+    if (result.Apikey && result.userInfo) {
       showUserInfo(result.userInfo);
     } else {
       showAuthSection();
@@ -212,6 +212,7 @@ const fetchUserInfo = async (token) => {
     await new Promise((resolve) => {
       chrome.storage.local.set({ 
         userInfo: userInfo,
+         userToken: token,
         authTimestamp: Date.now()
       }, resolve);
     });
@@ -235,7 +236,7 @@ const fetchUserInfo = async (token) => {
     // Save token if provided by backend
     if (result.token) {
       await new Promise((resolve) => {
-        chrome.storage.local.set({ userToken: result.token }, () => {
+        chrome.storage.local.set({ Apikey: result.token }, () => {
           console.log("Token saved in local storage:", result.token);
           resolve();
         });
@@ -288,23 +289,28 @@ const fetchUserInfo = async (token) => {
  */
 const logout = async () => {
   try {
+  
     // Get the current token
-    const result = await new Promise((resolve) => {
+    const {userToken} = await new Promise((resolve) => {
       chrome.storage.local.get(['userToken'], resolve);
     });
     
-    if (result.userToken) {
+    if (userToken) {
       // Revoke the token
       await new Promise((resolve) => {
-        chrome.identity.removeCachedAuthToken({ token: result.userToken }, resolve);
+        chrome.identity.removeCachedAuthToken({ token: userToken }, resolve);
       });
     }
     
     // Clear stored data
     await new Promise((resolve) => {
-      chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], resolve);
+      chrome.storage.local.remove(['userToken','Apikey', 'userInfo', 'authTimestamp'], resolve);
     });
-    
+     chrome.storage.local.get(null, (data) => {
+      console.log("Storage after logout:", data); // Should be {}
+    });
+
+     console.log("All auth data cleared");
     showAuthSection();
     showStatus('Successfully signed out', 'success');
   } catch (error) {
@@ -321,24 +327,29 @@ const continueToApp = async () => {
   try {
     // Check if user is authenticated
     const result = await new Promise((resolve) => {
-      chrome.storage.local.get(['userToken', 'userInfo'], resolve);
+      chrome.storage.local.get(['Apikey', 'userInfo'], resolve);
     });
-    
-    if (result.userToken && result.userInfo) {
+
+    if (result.Apikey && result.userInfo) {
+     
       // Redirect to popup.html by changing the popup URL
       await new Promise((resolve) => {
         chrome.action.setPopup({ popup: 'popup.html' }, resolve);
       });
-      
+         showStatus('Authentication successful!', 'success');
+      // Optionally, you can show a message or UI indicating the user should click the icon
       // Close current popup and open the main app
-      window.close();
+       window.close();
       
       // Open the main popup
-      setTimeout(() => {
-        chrome.action.openPopup();
-      }, 100);
+      // debugger
+      // setTimeout(() => {
+      //   chrome.action.openPopup();
+      // }, 10);
     } else {
+      console.log("Blocked: No Apikey or no userInfo");
       showStatus('Please authenticate first', 'error');
+      showAuthSection();
     }
   } catch (error) {
     console.error('Navigation error:', error);
@@ -354,10 +365,10 @@ const continueToApp = async () => {
 const isTokenValid = async () => {
   try {
     const result = await new Promise((resolve) => {
-      chrome.storage.local.get(['userToken', 'authTimestamp'], resolve);
+      chrome.storage.local.get(['Apikey', 'authTimestamp'], resolve);
     });
-    
-    if (!result.userToken || !result.authTimestamp) {
+
+    if (!result.Apikey || !result.authTimestamp) {
       return false;
     }
     

@@ -936,12 +936,22 @@ padding: 4px 10px;
   <span class="token-count" id="tokenCount" aria-label="Token count: 15">15</span>
 </div>
 
-    <div class="dropdown" id="profileDropdown" role="menu">
+    <!-- <div class="dropdown" id="profileDropdown" role="menu">
       <div class="toggle">
+      
         <label for="devModeToggle">Developer Mode</label>
+       <label class="switch">
+     <span class="label-text">Developer Mode</span>
         <input type="checkbox" id="devModeToggle" aria-checked="false" />
         <span class="slider" role="presentation"></span>
-      </div>
+      </label> -->
+      <div class="dropdown" id="profileDropdown">
+         <label class="toggle"> 
+          <span>Developer Mode</span> 
+          <input type="checkbox" id="devModeToggle" /> 
+          <span class="slider"></span> 
+        </label>
+      
       <button class="logout-btn-small" id="logoutBtnSmall">Sign Out</button>
     </div>
     
@@ -958,7 +968,7 @@ padding: 4px 10px;
         </div>
       </section>
 
-      <section class="section">
+      <!-- <section class="section">
         <h2>Page Information</h2>
         <div class="info-box">
           <dl>
@@ -968,9 +978,16 @@ padding: 4px 10px;
             <dd id="pageTitle">-</dd>
           </dl>
         </div>
-      </section>
+      </section> -->
 
-   
+   <div class="section"> 
+    <h3>Page Information</h3> 
+    <div class="info-box"> 
+      <div><strong>URL:</strong> 
+        <span id="pageUrl">-</span></div> 
+        <div><strong>Title:</strong>
+           <span id="pageTitle">-</span></div> 
+          </div> </div>
 
     <!-- <div class="section">
   <h3>Upload Resume</h3>
