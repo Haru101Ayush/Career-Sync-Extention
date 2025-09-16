@@ -162,6 +162,12 @@ async function sendViaGmail() {
 
         if (response && response.success) {
             showStatus('Email sent successfully via Gmail!', 'success');
+            await new Promise((resolve) => {
+        chrome.storage.local.remove(['jobData'], resolve);
+      });
+       document.getElementById('selectedText').textContent = 'No text selected';
+      document.getElementById('pageUrl').textContent = '-';
+      document.getElementById('pageTitle').textContent = '-';
         } else {
             const errorMsg = response ? response.error : 'Failed to send email';
             showStatus(`Gmail Error: ${errorMsg}`, 'error');
@@ -902,7 +908,7 @@ async function sendToServer() {
   
     if (response && (response.success || response.data?.tokenCount !== undefined)) {
       showStatus('Successfully sent to server!', 'success');
-      
+     
       if (response.data?.tokenCount !== undefined) {
         chrome.storage.local.set({ tokenCount: response.data.tokenCount });
         displayTokenCount(); // Update UI immediately
