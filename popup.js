@@ -85,7 +85,33 @@ async function sendViaGmail() {
 
         //showLoading(true, 'Sending email via Gmail...');
         const resumeFile = document.getElementById("resumeInput").files[0];
-    // let attachment = null;
+        let fileToProcess = resumeFile;
+         let fileName = '';
+     if (!fileToProcess) {
+      const savedResumeData = await new Promise(resolve => {
+        // Use chrome.storage.local to get saved data
+        chrome.storage.local.get(['resumeFileName', 'resumeFileBase64'], resolve);
+      });
+        if (savedResumeData.resumeFileBase64) {
+        // Convert the Base64 string back to a Blob object
+        const base64 = savedResumeData.resumeFileBase64;
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        fileToProcess = new Blob([bytes.buffer], { type: 'application/pdf' });
+        fileName = savedResumeData.resumeFileName;
+      }
+    } else {
+      fileName = resumeFile.name;
+    }
+    
+    if (!fileToProcess) {
+      showStatus('Please select or save a resume file.', 'error');
+      return;
+    }
+        // let attachment = null;
 
     // if (resumeFile) {
     //   const base64Data = await fileToBase64(resumeFile);
@@ -95,16 +121,16 @@ async function sendViaGmail() {
     //     data: base64Data
     //   };
     // }
-     if (!resumeFile) {
-      showStatus('Please select a resume file.', 'error');
-      return;
-    }
-     const fileData = await fileToArrayBuffer(resumeFile);
+    //  if (!resumeFile) {
+    //   showStatus('Please select a resume file.', 'error');
+    //   return;
+    // }
+     const fileData = await fileToArrayBuffer(fileToProcess);
 
     // Create a serializable data object for the attachment
     const attachment = {
-      name: resumeFile.name,
-      type: resumeFile.type || "application/pdf",
+      name: fileName,
+      type: fileToProcess.type || "application/pdf",
       // Convert the ArrayBuffer to a serializable array of numbers
       data: Array.from(new Uint8Array(fileData))
     };
@@ -116,7 +142,7 @@ async function sendViaGmail() {
             isHtml: false,
              attachments: [attachment]
         };
-      showLoading(true, 'Sending email via Gmail...');
+      showLoading(true);
         const response = await new Promise((resolve, reject) => {
            console.log("Email data being sent:", emailData);
 
@@ -191,6 +217,7 @@ async function displayTokenCount() {
         
         if (tokenCountEl) {
             tokenCountEl.textContent = count;
+             tokenCountEl.style.color = count > 0 ? '#22c55e' : '#ef4444';
         }
         
         if (devStatusDot) {
@@ -208,12 +235,12 @@ async function displayTokenCount() {
 async function setupDevModeToggle() {
   try {
     const devToggle = document.getElementById('devModeToggle');
-    const devStatusDot = document.getElementById('devStatusDot');
+    // const devStatusDot = document.getElementById('devStatusDot');
     const userBadge = document.getElementById('userBadge');
     const dropdown = document.getElementById('profileDropdown');
     const settingsSection = document.querySelector('.section-header')?.parentElement; // Settings container
     
-    if (!devToggle || !devStatusDot) {
+    if (!devToggle) {
       console.error('Developer mode toggle elements not found');
       return;
     }
@@ -271,9 +298,9 @@ async function setupDevModeToggle() {
         }
         
         // Update status dot color
-        if (devStatusDot) {
-          devStatusDot.style.backgroundColor = isDev ? '#22c55e' : '#ef4444';
-        }
+        // if (devStatusDot) {
+        //   devStatusDot.style.backgroundColor = isDev ? '#22c55e' : '#ef4444';
+        // }
         
         console.log('Developer mode ' + (isDev ? 'enabled' : 'disabled'));
       } catch (error) {
@@ -295,7 +322,7 @@ async function setupDevModeToggle() {
 async function logout() {
     try {
         await new Promise((resolve, reject) => {
-            chrome.storage.local.remove(['userToken', 'userInfo', 'authTimestamp'], () => {
+            chrome.storage.local.remove(['userToken', 'Apikey', 'userInfo', 'authTimestamp'], () => {
                 if (chrome.runtime.lastError) {
                     reject(new Error(chrome.runtime.lastError.message));
                     return;
@@ -507,6 +534,15 @@ async function uploadResumeToParser(file) {
         return null;
     }
 }
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
     // Resume upload input
 // Resume elements
 function initResumeUpload() {
@@ -559,35 +595,46 @@ parseResumeBtn.addEventListener("click", function () {
     parseLoading.style.display = "inline";
     parseResumeBtn.disabled = true;
 
-    
-    uploadResumeToParser(file)
+    fileToBase64(file)
+      .then(base64Data => {
+  return uploadResumeToParser(file)
         .then(result => {
+              return { result, base64Data };
+        });
+    }).then(({ result, base64Data }) => {
             // console.log(" Pa
             // rsed Resume:", result);
              parseLoading.style.display = "none";
         parseResumeBtn.style.display = "none";
             chrome.storage.local.set({
                 resumeSummary: result.summary || JSON.stringify(result),
-                resumeFileName: file.name
+                resumeFileName: file.name,
+                resumeFileBase64: base64Data
             }, function () {
 const hadError = !!result.error;
-          renderParsedRow(file.name, hadError);
-                
-                
+          renderParsedRow(file.name, hadError);   
             });
 
-}).catch(err => {
-            
-        
+}).catch(err => { 
 console.error("Parse failed", err);
         parseLoading.style.display = "none";
         parseResumeBtn.disabled = false;
 
         // show error row
-        renderParsedRow(resumeInput.files[0].name, true);
+     //   renderParsedRow(resumeInput.files[0].name, true);
+      if (resumeInput.files.length > 0) {
+          renderParsedRow(resumeInput.files[0].name, true);
+        }
         });
-});
-           
+})
+    function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}    
 
 // Replace resume
 replaceResumeBtn.addEventListener("click", function () {
@@ -832,7 +879,7 @@ async function sendToServer() {
 
   const profile_data = resumeSummary;
 
-  showLoading(true, 'Sending to server...');
+  showLoading(true);
 
   try {
     const template = document.getElementById('emailTemplate').value;
@@ -939,30 +986,35 @@ function showStatus(message, type = 'info') {
  * @param {string} message - Message to display when showing
  * @returns {void}
  */
-function showLoading(show, message = 'Sending...') {
+function showLoading(show, message = null) {
     try {
         const loadingEl = document.getElementById('loading');
         const sendBtn = document.getElementById('sendBtn');
         const gmailBtn = document.getElementById('gmailBtn');
         
-        if (!loadingEl || !sendBtn || !gmailBtn) {
-            console.error('Loading or button elements not found');
-            return;
-        }
+        if (!loadingEl || !sendBtn || !gmailBtn) return;
         
         if (show) {
-            loadingEl.style.display = 'block';
-            loadingEl.querySelector('div:last-child').textContent = message;
-            sendBtn.disabled = true;
-            gmailBtn.disabled = true;
-            sendBtn.textContent = 'Sending...';
-            gmailBtn.textContent = 'Sending...';
+            loadingEl.style.display = 'flex';
+           // loadingEl.querySelector('div:last-child').textContent = message;
+             const messageEl = loadingEl.querySelector('div:last-child');
+        if (messageEl) messageEl.textContent = message || '';
+        
+        sendBtn.disabled = true;
+        gmailBtn.disabled = true;
+        //    sendBtn.disabled = true;
+        //     gmailBtn.disabled = true;
+        //     sendBtn.textContent = 'Sending...';
+        //     gmailBtn.textContent = 'Sending...';
         } else {
             loadingEl.style.display = 'none';
-            sendBtn.disabled = false;
-            gmailBtn.disabled = false;
-            sendBtn.textContent = 'Send to Server';
-            gmailBtn.textContent = 'Send via Gmail';
+        sendBtn.disabled = false;
+        gmailBtn.disabled = false;
+            // loadingEl.style.display = 'none';
+            // sendBtn.disabled = false;
+            // gmailBtn.disabled = false;
+            // sendBtn.textContent = 'Send to Server';
+            // gmailBtn.textContent = 'Send via Gmail';
         }
     } catch (error) {
         console.error('Error managing loading state:', error);

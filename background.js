@@ -197,7 +197,7 @@ async function sendGmailEmail(token, emailData) {
   ];
 
   for (const att of attachments) {
-      const base64Data = att.data;
+      const base64Data =  att.data.replace(/(.{76})/g, "$1\r\n");
        mimeParts.push(
       ``,
       `--${boundary}`,
