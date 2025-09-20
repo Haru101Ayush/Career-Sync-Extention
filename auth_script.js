@@ -236,7 +236,7 @@ const fetchUserInfo = async (token) => {
     // Save token if provided by backend
     if (result.token) {
       await new Promise((resolve) => {
-        chrome.storage.local.set({ Apikey: result.token }, () => {
+        chrome.storage.local.set({ Apikey: result.token,tokenCount:result.usertokencount }, () => {
           console.log("Token saved in local storage:", result.token);
           resolve();
         });
