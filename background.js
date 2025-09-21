@@ -410,7 +410,7 @@ function getAccessTokenInteractive(interactive = true) {
 // Mail management functions
 async function addMail(data) {
   try {
-    if (!data || !data.id || !data.model) {
+    if (!data || !data.model) {
       console.warn('Invalid mail data provided:', data);
       return;
     }

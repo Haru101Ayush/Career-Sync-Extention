@@ -5,6 +5,7 @@ const baseurl = "https://ridgelike-katina-kissably.ngrok-free.app";
 let isEditMode = false;
 let MailList = [];
 let originalContent = '';
+var togglepreview = true;
 
 /**
  * Initialize the popup when DOM is fully loaded
@@ -427,10 +428,10 @@ function setupEventListeners() {
 
     // Button event listeners
     const buttons = [
-      { id: 'previewBtn', handler: previewEmail },
+      { id: 'mailPreviewBtn', handler: previewEmail },
       { id: 'sendBtn', handler: sendToServer },
       { id: 'copyBtn', handler: copyEmail },
-      { id: 'gmailBtn', handler: sendViaGmail },
+      { id: 'sendViagmailBtn', handler: sendViaGmail },
       { id: 'logoutBtnSmall', handler: logout },
       { id: 'editBtn', handler: toggleEditMode },
       { id: 'saveBtn', handler: saveChanges },
@@ -714,13 +715,20 @@ async function previewEmail() {
       return;
     }
 
+    togglepreview = !togglepreview;
+
     const subjectContent = document.getElementById('subjectContent');
     const emailContent = document.getElementById('emailContent');
     const emailPreview = document.getElementById('emailPreview');
     
     if (subjectContent) subjectContent.innerHTML = jobDetails.subject;
     if (emailContent) emailContent.innerHTML = jobDetails.body;
-    if (emailPreview) emailPreview.style.display = 'block';
+
+    if(togglepreview){
+      if (emailPreview) emailPreview.style.display = 'none';
+    }else{
+      if (emailPreview) emailPreview.style.display = 'block';
+    }
     
     // Reset to preview mode
     if (isEditMode) {

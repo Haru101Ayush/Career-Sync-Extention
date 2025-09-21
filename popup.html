@@ -199,37 +199,45 @@ button {
   padding: 14px;
 }
 
-      .selected-text {
-        background: #fff5f5;
-        border-left: 4px solid #f56565;
-        padding: 12px;
-        border-radius: 0 8px 8px 0;
-        font-style: italic;
-        margin-bottom: 15px;
-      }
+.mail-que {
+  margin-top: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
 
-      .form-group {
-        margin-bottom: 15px;
-      }
+  .selected-text {
+    background: #fff5f5;
+    border-left: 4px solid #f56565;
+    padding: 12px;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    margin-bottom: 15px;
+  }
 
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: #4a5568;
-      }
+  .form-group {
+    margin-bottom: 15px;
+  }
 
-      input,
-      textarea,
-      select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        font-size: 14px;
-        box-sizing: border-box;
-      }
-      
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #4a5568;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
        input,
   textarea,
   select {
@@ -901,6 +909,145 @@ padding: 4px 10px;
   position: static; /* override absolute from global .status-icon */
   transform: none;  /* remove any transform */
 }
+
+  /* Email Status Card */
+.email-status-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 1rem;
+    max-width: 100%;
+}
+
+.email-status-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 16px;
+    min-height: 50px;
+}
+
+/* Email Info Section */
+.email-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.email-label {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.email-address {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Status Info Section */
+.status-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.status-label {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-value {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-text {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-text.completed {
+    color: #22c55e;
+}
+
+.status-text.pending {
+    color: #f59e0b;
+}
+
+.status-text.failed {
+    color: #ef4444;
+}
+
+.status-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    padding: 0;
+}
+
+.action-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.action-btn:hover {
+    background: #f3f4f6;
+    transform: scale(1.05);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+.document-btn:hover svg path,
+.document-btn:hover svg polyline,
+.document-btn:hover svg line {
+    stroke: #4b5563;
+}
+
+
     </style>
   </head>
   <body>
@@ -951,13 +1098,15 @@ padding: 4px 10px;
      
 
    <div class="section"> 
+
     <h3>Page Information</h3> 
     <div class="info-box"> 
       <div><strong>URL:</strong> 
         <span id="pageUrl">-</span></div> 
         <div><strong>Title:</strong>
            <span id="pageTitle">-</span></div> 
-          </div> </div>
+          </div> 
+   </div>
 
 
 <section class="section">
@@ -1002,6 +1151,7 @@ padding: 4px 10px;
     <div class="button-container" style="display:flex; justify-content:center; margin-top:12px;">
       <button id="replaceResumeBtn" class="btn-primary" style="display:none;">Update</button>
     </div>
+    
   </div>
 </section>
 
@@ -1051,12 +1201,11 @@ padding: 4px 10px;
           <textarea
             id="customTemplate"
             aria-describedby="templateHint"
-            placeholder="Enter your custom email template...
-                
-Available placeholders:
-{selectedText} - Selected job text
-{pageUrl} - Job page URL  
-{pageTitle} - Job page title"
+            placeholder="Enter your custom email template...               
+                          Available placeholders:
+                          {selectedText} - Selected job text
+                          {pageUrl} - Job page URL  
+                          {pageTitle} - Job page title"
           ></textarea>
           <div id="templateHint" class="visually-hidden">Use placeholders like {selectedText}, {pageUrl}, and {pageTitle} in your template</div>
         </div>
@@ -1076,29 +1225,64 @@ Available placeholders:
 
       <div class="loading" id="loading" role="status" aria-live="polite">
         <div class="spinner" aria-hidden="true"></div>
-       
+      </div>
+
+      <!-- Mail Queue Box -->
+      <div class="mail-que"> 
+        <h3>Mail Queue</h3>
+
+        <!-- Completed Status Card -->
+        <div class="email-status-card">
+            <div class="card-content">
+              <div class="email-info">
+                  <span class="email-label">To :</span>
+                  <span class="email-address">ayush@gmail.com</span>
+              </div>
+              
+              <div class="status-info">
+                  <span class="status-label">Status :</span>
+                  <div class="status-value">
+                      <span class="status-text completed">Completed</span>
+                  </div>
+              </div>
+              
+              <div class="action-buttons">
+                  <button class="action-btn document-btn" id="mailPreviewBtn" title="View Document" >
+                      <img src="icons/image 11.png" style="width: 1.5rem; height: 1.5rem;" alt="">
+                  </button>
+                  
+                  <button class="action-btn email-btn" id="sendViagmailBtn" title="Open Email">
+                      <img src="icons/image 13 (2).png" style="width: 1.5rem; height: 1.5rem;" alt="">
+                  </button>
+                  
+                  <button class="action-btn close-btn" title="Close">
+                      <img src="icons/image 12.png" style="width: 1.5rem; height: 1.5rem;" alt="">
+                  </button>
+              </div>
+            </div>
+            <section class="email-preview" id="emailPreview"  style="display: none" aria-labelledby="emailPreviewHeading">
+                  <h2 id="emailPreviewHeading">
+                      Email Preview
+                      <div class="preview-controls" role="group" aria-label="Email editing controls">
+                          <button class="btn btn-primary" id="editBtn" aria-controls="subjectTextarea emailTextarea">Edit Email</button>
+                          <button class="btn btn-success" id="saveBtn" style="display: none;">Save Changes</button>
+                          <button class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+                      </div>
+                  </h2>
+                  
+                  <label for="subjectTextarea">Subject:</label>
+                  <div class="subject-content" id="subjectContent" aria-live="polite"> </div>
+                  <textarea class="subject-textarea" id="subjectTextarea" style="display: none;" aria-label="Edit email subject"> </textarea>
+
+                  <label for="emailTextarea">Body:</label>
+                  <div class="email-content" id="emailContent" aria-live="polite"></div>
+                  <textarea class="email-textarea" id="emailTextarea" style="display: none;" aria-label="Edit email body"></textarea>
+            </section>
+        </div>
+        
       </div>
 
       <div class="status" id="status" role="status" aria-live="polite"></div>
-       <section class="email-preview" id="emailPreview" style="display: none;" aria-labelledby="emailPreviewHeading">
-    <h2 id="emailPreviewHeading">
-        Email Preview
-        <div class="preview-controls" role="group" aria-label="Email editing controls">
-            <button class="btn btn-primary" id="editBtn" aria-controls="subjectTextarea emailTextarea">Edit Email</button>
-            <button class="btn btn-success" id="saveBtn" style="display: none;">Save Changes</button>
-            <button class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
-        </div>
-    </h2>
-    
-    <label for="subjectTextarea">Subject:</label>
-    <div class="subject-content" id="subjectContent" aria-live="polite"> </div>
-    <textarea class="subject-textarea" id="subjectTextarea" style="display: none;" aria-label="Edit email subject"> </textarea>
-
-    <label for="emailTextarea">Body:</label>
-    <div class="email-content" id="emailContent" aria-live="polite"></div>
-    <textarea class="email-textarea" id="emailTextarea" style="display: none;" aria-label="Edit email body"></textarea>
-    
-      </section>
     </div>
     <script src="popup.js"></script>
   </body>
